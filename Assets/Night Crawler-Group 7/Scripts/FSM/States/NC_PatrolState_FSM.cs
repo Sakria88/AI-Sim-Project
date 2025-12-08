@@ -8,7 +8,7 @@ using System;
 /// This version removes all Rule-Based System logic
 /// and follows ONLY the pure FSM transition table.
 /// </summary>
-public class NC_PatrolState : TankState
+public class NC_PatrolState_FSM : NC_BaseScript_FSM
 {
     private NC_SmartTank_FSM tank;
     private Vector3 patrolTarget;
