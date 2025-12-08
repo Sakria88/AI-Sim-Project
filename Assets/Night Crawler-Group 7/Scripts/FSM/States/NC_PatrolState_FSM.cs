@@ -22,10 +22,12 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
     public override Type StateEnter()
     {
         // *I log when switching into Patrol so debugging becomes easier later*
-        tank.DebugMessage("ENTERING PATROL (FSM ONLY)");
+        Debug.Log("ENTERING PATROL (FSM ONLY)");
 
         // *I select a patrol point so I can wander the map*
         SetNewPatrolPoint();
+        return null;
+    
     }
 
     public override Type StateUpdate()
@@ -51,10 +53,11 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         // *I check the one condition that triggers a state change*
         if (targetDistance > 52f)
         {
-            tank.DebugMessage("FSM: Target distance > 52 → PURSUE");
-            tank.ChangeState(new NC_PursueState(tank));
-            return;
+            Debug.Log("FSM: Target distance > 52 → PURSUE");
+            Change.State(new NC_PursueState(tank));
+            
         }
+        return null;
 
         // (No other transitions exist in FSM table for Patrol)
     }
@@ -74,5 +77,7 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         Vector3 randomDir = UnityEngine.Random.insideUnitSphere * patrolRadius;
         randomDir.y = 0;
         patrolTarget = tank.transform.position + randomDir;
+        
     }
+   
 }
