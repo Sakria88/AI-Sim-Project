@@ -19,7 +19,7 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         tank = tankRef;
     }
 
-    public override void Enter()
+    public override void StateEnter()
     {
         // *I log when switching into Patrol so debugging becomes easier later*
         tank.DebugMessage("ENTERING PATROL (FSM ONLY)");
@@ -59,10 +59,10 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         // (No other transitions exist in FSM table for Patrol)
     }
 
-    public override void Exit()
+    public override void StateExit()
     {
         // *I log that I am leaving the state*
-        tank.DebugMessage("EXITING PATROL");
+        tank.DebugMessage("EXITING PATRSOL");
     }
 
     // ======================================================
