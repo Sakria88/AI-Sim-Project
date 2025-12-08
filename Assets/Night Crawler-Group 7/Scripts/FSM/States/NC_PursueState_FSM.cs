@@ -24,18 +24,18 @@ public class NC_PursueState_FSM : NC_BaseScript_FSM
         return null;
     }
 
-    public override Type StateExit()
-    {
-        NCEnTank.stats["PurseState"] = false; //When the state
-        return null;
-    }
-
     public override Type StateUpdate()
     {
 
         NCEnTank.PursueState();
 
 
+        return null;
+    }
+
+    public override Type StateExit()
+    {
+        NCEnTank.stats["PurseState"] = false; //When the state
         return null;
     }
 }
