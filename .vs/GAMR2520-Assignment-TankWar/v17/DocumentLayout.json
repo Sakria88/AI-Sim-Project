@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\shassh00\\Downloads\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B73566C3-D5AF-3535-037D-39A7CCED5964}|Assembly-CSharp.csproj|c:\\users\\shassh00\\downloads\\gamr2520-assignment-tankwar\\gamr2520-assignment-tankwar\\gamr2520-assignment-tankwar\\assets\\scripts\\do not modify\\tankscripts\\aitank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B73566C3-D5AF-3535-037D-39A7CCED5964}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\do not modify\\tankscripts\\aitank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B73566C3-D5AF-3535-037D-39A7CCED5964}|Assembly-CSharp.csproj|c:\\users\\shassh00\\downloads\\gamr2520-assignment-tankwar\\gamr2520-assignment-tankwar\\gamr2520-assignment-tankwar\\assets\\scripts\\do not modify\\gamecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B73566C3-D5AF-3535-037D-39A7CCED5964}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\do not modify\\gamecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B73566C3-D5AF-3535-037D-39A7CCED5964}|Assembly-CSharp.csproj|c:\\users\\shassh00\\downloads\\gamr2520-assignment-tankwar\\gamr2520-assignment-tankwar\\gamr2520-assignment-tankwar\\assets\\scripts\\do not modify\\tankscripts\\dumbtank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B73566C3-D5AF-3535-037D-39A7CCED5964}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\do not modify\\tankscripts\\dumbtank.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "GameController.cs",
+              "DocumentMoniker": "C:\\Users\\shassh00\\Downloads\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\Assets\\Scripts\\DO NOT MODIFY\\GameController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\DO NOT MODIFY\\GameController.cs",
+              "ToolTip": "C:\\Users\\shassh00\\Downloads\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\Assets\\Scripts\\DO NOT MODIFY\\GameController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\DO NOT MODIFY\\GameController.cs",
+              "ViewState": "AgIAAFwAAAAAAAAAAAAwwGQAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-25T16:27:41.655Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AITank.cs",
+              "DocumentMoniker": "C:\\Users\\shassh00\\Downloads\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\AITank.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\AITank.cs",
+              "ToolTip": "C:\\Users\\shassh00\\Downloads\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\AITank.cs",
+              "RelativeToolTip": "Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\AITank.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-25T16:25:57.641Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DumbTank.cs",
+              "DocumentMoniker": "C:\\Users\\shassh00\\Downloads\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\DumbTank.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\DumbTank.cs",
+              "ToolTip": "C:\\Users\\shassh00\\Downloads\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\GAMR2520-Assignment-TankWar\\Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\DumbTank.cs",
+              "RelativeToolTip": "Assets\\Scripts\\DO NOT MODIFY\\TankScripts\\DumbTank.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-25T16:21:37.822Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
