@@ -5,15 +5,18 @@ using System;
 
 public class NC_RetreatState_FSM: NC_BaseScript_FSM
 {
-    // Start is called before the first frame update
-    void Start()
+    public override Type StateEnter()
     {
-        
+        throw new NotImplementedException();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override Type StateExit()
     {
-        
+        throw new NotImplementedException();
+    }
+
+    public override Type StateUpdate()
+    {
+        throw new NotImplementedException();
     }
 }
