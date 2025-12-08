@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 //This class is for the purse state-the purse state goes after the enemy tank
-public class NC_PursueState_FSM : NC_Base
+public class NC_PursueState_FSM : NC_BaseScript_FSM
 {
 
 
