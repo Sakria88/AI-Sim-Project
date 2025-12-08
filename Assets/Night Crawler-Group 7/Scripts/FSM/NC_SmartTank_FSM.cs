@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using static AStar;
 
 public class NC_SmartTank_FSM : AITank
 {
