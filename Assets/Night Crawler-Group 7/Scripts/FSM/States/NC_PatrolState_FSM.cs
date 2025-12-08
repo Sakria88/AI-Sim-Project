@@ -14,12 +14,12 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
     private Vector3 patrolTarget;
     private float patrolRadius = 25f;
 
-    public NC_PatrolState(NC_SmartTank_FSM tankRef)
+    public NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
     {
         tank = tankRef;
     }
 
-    public override void StateEnter()
+    public override Type StateEnter()
     {
         // *I log when switching into Patrol so debugging becomes easier later*
         tank.DebugMessage("ENTERING PATROL (FSM ONLY)");
@@ -28,7 +28,7 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         SetNewPatrolPoint();
     }
 
-    public override void Update()
+    public override Type StateUpdate()
     {
         // ======================================================
         //  🔹 PATROL MOVEMENT
@@ -59,7 +59,7 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         // (No other transitions exist in FSM table for Patrol)
     }
 
-    public override void StateExit()
+    public override Type StateExit()
     {
         // *I log that I am leaving the state*
         tank.DebugMessage("EXITING PATRSOL");
