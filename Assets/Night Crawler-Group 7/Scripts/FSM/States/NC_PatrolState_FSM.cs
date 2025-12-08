@@ -1,25 +1,18 @@
-﻿using using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-;
 
 /// <summary>
-/// NightCrawler PATROL STATE
-/// Handles wandering, scanning, rule evaluation, and FSM transitions.
-/// This version is updated according to my full transition table.
+/// NightCrawler PATROL STATE (FSM ONLY)
+/// This version removes all Rule-Based System logic
+/// and follows ONLY the pure FSM transition table.
 /// </summary>
-public class NC_PatrolState_FSM : NC_BaseScript_FSM
+public class NC_PatrolState : TankState
 {
     private NC_SmartTank_FSM tank;
     private Vector3 patrolTarget;
     private float patrolRadius = 25f;
-
-    // ===== RBS FACTS (based on my transition table) =====
-    private bool fact_enemyInRange = false;
-    private bool fact_canSeeEnemy = false;
-    private bool fact_enemyApproaching = false;
-    private bool fact_enemyBaseDetected = false;
 
     public NC_PatrolState(NC_SmartTank_FSM tankRef)
     {
@@ -28,10 +21,10 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
 
     public override void Enter()
     {
-        // *I log my state entry to help future debugging*
-        tank.DebugMessage("ENTERING PATROL");
+        // *I log when switching into Patrol so debugging becomes easier later*
+        tank.DebugMessage("ENTERING PATROL (FSM ONLY)");
 
-        // *I pick a random patrol location*
+        // *I select a patrol point so I can wander the map*
         SetNewPatrolPoint();
     }
 
@@ -42,70 +35,43 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         // ======================================================
         tank.MoveTowards(patrolTarget);
 
+        // *If I reach the patrol point, I pick a new one*
         if (Vector3.Distance(tank.transform.position, patrolTarget) < 2.5f)
         {
             SetNewPatrolPoint();
         }
 
         // ======================================================
-        //  🔹 UPDATE RBS FACTS (from my transition table)
+        //  🔹 FSM TRANSITION CHECK (NO RBS)
+        //  From the FSM table:
+        //  Patrol → Pursue when TargetDistance > 52
         // ======================================================
-        fact_enemyInRange = tank.EnemyWithinRange();
-        fact_canSeeEnemy = tank.CanSeeEnemy();
-        fact_enemyApproaching = tank.EnemyApproaching();
-        fact_enemyBaseDetected = tank.EnemyBaseNearby();
+        float targetDistance = tank.GetDistanceToEnemy();
 
-        // ======================================================
-        //  🔹 APPLY RBS RULES (these match my transition table EXACTLY)
-        // ======================================================
-
-
-        // RULE A (Patrol row 1):
-        // Enemy within range & enemy CAN'T see me → PURSUE
-        if (fact_enemyInRange && !fact_canSeeEnemy)
+        // *I check the one condition that triggers a state change*
+        if (targetDistance > 52f)
         {
-            tank.DebugMessage("RULE A: Enemy in range but cannot see me → PURSUE");
+            tank.DebugMessage("FSM: Target distance > 52 → PURSUE");
             tank.ChangeState(new NC_PursueState(tank));
             return;
         }
 
-        // RULE B (Patrol row 2):
-        // Enemy within range & CAN see me (enemy coming closer) → WAIT
-        if (fact_enemyInRange && fact_canSeeEnemy && fact_enemyApproaching)
-        {
-            tank.DebugMessage("RULE B: Enemy sees me & approaching → WAIT");
-            tank.ChangeState(new NC_WaitState(tank));
-            return;
-        }
-
-        // RULE C (Patrol row 3):
-        // Enemy NOT in range & enemy base detected → BASE ATTACK
-        if (!fact_enemyInRange && fact_enemyBaseDetected)
-        {
-            tank.DebugMessage("RULE C: No enemy nearby but enemy base detected → BASE ATTACK");
-            tank.ChangeState(new NC_BaseAttackState(tank));
-            return;
-        }
-
-        // ======================================================
-        //  🔹 (Optional) Behaviour Tree Hook
-        //  So later I can plug this state into a BT node easily.
-        // ======================================================
-        // Example: tank.BT_ReportState("Patrol");
+        // (No other transitions exist in FSM table for Patrol)
     }
 
     public override void Exit()
     {
-        // *I notify when leaving the state to help testing*
+        // *I log that I am leaving the state*
         tank.DebugMessage("EXITING PATROL");
     }
 
     // ======================================================
-    // Helper: Generates new wander point
+    // Helper: pick a random patrol point
     // ======================================================
     private void SetNewPatrolPoint()
     {
-        Vector3 randomDir = Random.insideUnitSphere * patrolRadius;
+        // *I wander by selecting a random point in a radius*
+        Vector3 randomDir = UnityEngine.Random.insideUnitSphere * patrolRadius;
         randomDir.y = 0;
         patrolTarget = tank.transform.position + randomDir;
     }
