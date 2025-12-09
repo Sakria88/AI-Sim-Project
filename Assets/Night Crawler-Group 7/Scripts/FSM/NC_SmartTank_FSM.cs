@@ -7,7 +7,7 @@ using static AStar;
 
 public class NC_SmartTank_FSM : AITank
 {
-    public GameObject enemyTank;        /*!< <c>enemyTank</c> stores a reference to a target enemy tank. 
+    public GameObject NCEnTank;        /*!< <c>enemyTank</c> stores a reference to a target enemy tank. 
                                         * This should be taken from <c>enemyTanksFound</c>, only whilst within the tank sensor. 
                                         * Reference should be removed and refreshed every update. */
 
@@ -15,7 +15,7 @@ public class NC_SmartTank_FSM : AITank
                                         * This should be taken from <c>consumablesFound</c>, only whilst within the tank sensor. 
                                         * Reference should be removed and refreshed every update. */
 
-    public GameObject enemyBase;        /*!< <c>enemyBase</c> stores a reference to a target enemy base. 
+    public GameObject NCEnBase;        /*!< <c>enemyBase</c> stores a reference to a target enemy base. 
                                          * This should be taken from <c>enemyBasesFound</c>, only whilst within the tank sensor. 
                                         * Reference should be removed and refreshed every update. */
 
