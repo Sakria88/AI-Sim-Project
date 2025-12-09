@@ -92,6 +92,16 @@ public class NC_SmartTank_FSM : AITank
 
     }
 
+public void MoveTowardBase(GameObject targetBase, float speed)
+{
+    // helper for base-attack movement tank should move 
+    // directly toward the enemy base using the normal pathfinding system.
+    // if no base is currently detected, tank does nothing here
+    if (targetBase == null)
+        return;
+
+    FollowPathToWorldPoint(targetBase, speed, heuristicMode);
+}
 
 
     // Start is called before the first frame update
@@ -159,6 +169,12 @@ public class NC_SmartTank_FSM : AITank
     {
         return a_IsFiring;
     }
+
+    internal void FollowPathToPoint(GameObject nCEnBase, float v, HeuristicMode heuristicMode)
+    {
+        throw new NotImplementedException();
+    }
+
     public float TankCurrentHealth
     {
         get
