@@ -24,6 +24,10 @@ public class NC_SmartTank_FSM : AITank
 
     float t;    /*!< <c>t</c> stores timer value */
     public HeuristicMode heuristicMode; /*!< <c>heuristicMode</c> Which heuristic used for find path. */
+   private void Awake()
+    {
+        InitializeStateMachine();
+    }
 
     private void InitializeStateMachine()
     {
@@ -41,10 +45,36 @@ public class NC_SmartTank_FSM : AITank
 
         GetComponent<NC_StateMachine_FSM>().SetStates(states);
     }
-    private void Awake()
+   private void Update()
     {
-        InitializeStateMachine();
+        RefreshBaseTargets();
     }
+private void RefreshBaseTargets()
+{
+    // check for visible enemy bases and choose the closest one
+    if (VisibleEnemyBases.Count > 0)
+    {
+        float closest = float.MaxValue;
+        GameObject closestBase = null;
+
+        foreach (var entry in VisibleEnemyBases)
+        {
+            if (entry.Value < closest)
+            {
+                closest = entry.Value;
+                closestBase = entry.Key;
+            }
+        }
+
+        NCEnBase = closestBase;
+    }
+    else
+    {
+        // No bases visible → leave NCEnBase unchanged 
+        // (so states can fall back to BaseDefend)
+    }
+}
+
 
     // Defitnition of behaviour of the different states
 
@@ -91,19 +121,6 @@ public class NC_SmartTank_FSM : AITank
         }
 
     }
-
-public void MoveTowardBase(GameObject targetBase, float speed)
-{
-    // helper for base-attack movement tank should move 
-    // directly toward the enemy base using the normal pathfinding system.
-    // if no base is currently detected, tank does nothing here
-    if (targetBase == null)
-        return;
-
-    FollowPathToWorldPoint(targetBase, speed, heuristicMode);
-}
-
-
     // Start is called before the first frame update
     public override void AITankStart()
     {
@@ -145,7 +162,38 @@ public void MoveTowardBase(GameObject targetBase, float speed)
     {
         a_GenerateRandomPoint();
     }
-     public void TankStop()
+
+    //-----------------------------------------
+    //  PATROL & BASE ATTACK HELPERS
+    //-----------------------------------------
+    //generate a temporary world point to feed into A* pathfinding
+
+   public GameObject CreateWorldPoint(Vector3 position)
+    {
+        GameObject point = new GameObject("WorldPoint");
+        point.transform.position = position;
+        return point;
+    }
+
+    // used by patrol states to move to random map locations
+    public void MoveToPatrolPoint(Vector3 targetPosition)
+    {
+        GameObject point = CreateWorldPoint(targetPosition);
+        FollowPathToWorldPoint(point, 1f, heuristicMode);
+    }
+   // used by base attack state to push toward enemy base
+    public void MoveTowardBase(GameObject targetBase, float speed)
+    {
+        if (targetBase == null)
+            return;
+
+        FollowPathToWorldPoint(targetBase, speed, heuristicMode);
+    }
+
+/// ----------------------
+/// TANK CONTROL HELPERS
+/// ----------------------
+  public void TankStop()
     {
         a_StopTank();
     }
@@ -153,6 +201,10 @@ public void MoveTowardBase(GameObject targetBase, float speed)
     {
         a_StartTank();
     }
+
+///-------------------------
+///TURRET CONTROL
+///-------------------------
     public void TurretFaceWorldPoint(GameObject pointInWorld)
     {
         a_FaceTurretToPoint(pointInWorld);
@@ -175,6 +227,9 @@ public void MoveTowardBase(GameObject targetBase, float speed)
         throw new NotImplementedException();
     }
 
+///-------------------------
+/// TANK STATUS PROPERTIES
+///-------------------------
     public float TankCurrentHealth
     {
         get
@@ -196,6 +251,10 @@ public void MoveTowardBase(GameObject targetBase, float speed)
             return a_GetFuelLevel;
         }
     }
+
+    ///--------------------------------
+    /// SENSOR DATA ACCESS
+    ///--------------------------------
     public List<GameObject> MyBases
     {
         get
