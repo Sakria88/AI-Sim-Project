@@ -68,10 +68,25 @@ public class NC_SmartTank_FSM : AITank
     }
     public void DefendAllyBase()
     {
-        if (MyBases.Count > 0)
+        myBase = MyBases[0];
+
+        if (myBase != null)
         {
-            myBase = MyBases[0];
-            
+            //go close to it and make a defensive perimeter searching for enemies
+            if (Vector3.Distance(transform.position, myBase.transform.position) < 25f)
+            {
+                // Reorient tank to face outwards from base using TurretFaceWorldPoint
+                Vector3 directionFromBase = transform.position - myBase.transform.position;
+                GameObject pointToFace = new GameObject();
+                pointToFace.transform.position = transform.position + directionFromBase.normalized * 10f;
+                TurretFaceWorldPoint(pointToFace);
+
+
+            }
+            else
+            {
+                FollowPathToWorldPoint(myBase, 1f, heuristicMode);
+            }
 
         }
 
