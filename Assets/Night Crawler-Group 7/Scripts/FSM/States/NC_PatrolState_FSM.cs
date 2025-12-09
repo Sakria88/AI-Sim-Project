@@ -13,6 +13,22 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
     private NC_SmartTank_FSM tank;
     private Vector3 patrolTarget;
     private float patrolRadius = 25f;
+}
+
+    public override Type StateEnter()
+    {
+        Debug.Log("ENTERING PATROL (FSM ONLY)");
+
+        // I generate my first random patrol point when entering
+        SetNewPatrolPoint();
+        return null;
+    }
+
+    public class NC_PatrolState_FSM : NC_BaseState_FSM
+{
+    private NC_SmartTank_FSM tank;
+    private Vector3 patrolTarget;
+    private float patrolRadius = 25f;
 
     public NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
     {
@@ -38,27 +54,38 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
         // tank.MoveTowards(patrolTarget); ########################################################## No function exists
 
         // *If I reach the patrol point, I pick a new one*
+
         if (Vector3.Distance(tank.transform.position, patrolTarget) < 2.5f)
         {
             SetNewPatrolPoint();
         }
+        if (tank.NCEnTank != null)
+        {
+            // I calculate how far I am from the chosen enemy tank
+            float distanceToEnemy = Vector3.Distance(tank.transform.position, tank.NCEnTank.transform.position);
 
-        // ======================================================
-        //  🔹 FSM TRANSITION CHECK (NO RBS)
-        //  From the FSM table:
-        //  Patrol → Pursue when TargetDistance > 52
-        // ======================================================
-        // float targetDistance = tank.GetDistanceToEnemy(); ########################################################## No function exists
+            // From my FSM table: Patrol → Pursue when distance > 52
+            if (distanceToEnemy > 52f)
+            {
+                Debug.Log("FSM: Target distance > 52 → PURSUE");
+                return typeof(NC_PursueState_FSM);
+            }
+            // ======================================================
+            //  🔹 FSM TRANSITION CHECK (NO RBS)
+            //  From the FSM table:
+            //  Patrol → Pursue when TargetDistance > 52
+            // ======================================================
+            // float targetDistance = tank.GetDistanceToEnemy(); ########################################################## No function exists
 
-        // *I check the one condition that triggers a state change*
-        
-        //if (targetDistance > 52f) ########################################## Cant aply while targetDistance doesnt exist
-        //{
-        //    Debug.Log("FSM: Target distance > 52 → PURSUE");
-        //    Change.State(new NC_PursueState(tank));
-            
-        //}
-        return null;
+            // *I check the one condition that triggers a state change*
+
+            //if (targetDistance > 52f) ########################################## Cant aply while targetDistance doesnt exist
+            //{
+            //    Debug.Log("FSM: Target distance > 52 → PURSUE");
+            //    Change.State(new NC_PursueState(tank));
+
+            //}
+            return null;
 
         // (No other transitions exist in FSM table for Patrol)
     }
