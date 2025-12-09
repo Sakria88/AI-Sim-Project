@@ -68,7 +68,7 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
         }
         else
         {
-            //FollowPathToWorldPoint(NCEnTank, 1f, heuristicMode);
+           
             return typeof(NC_ScavengeState_FSM); //If not Switch state
         }
 
