@@ -98,5 +98,16 @@ Thumbs.db
 *.ma~
 *.mb~
 
+# Ignore Unity auto-generated C# project files
+*.csproj
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+
 UserSettings/Layouts/default-2022.dwlt
 UserSettings/Layouts/default-2022.dwlt
