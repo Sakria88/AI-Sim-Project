@@ -7,6 +7,24 @@ using static AStar;
 
 public class NC_SmartTank_FSM : AITank
 {
+    public GameObject enemyTank;        /*!< <c>enemyTank</c> stores a reference to a target enemy tank. 
+                                        * This should be taken from <c>enemyTanksFound</c>, only whilst within the tank sensor. 
+                                        * Reference should be removed and refreshed every update. */
+
+    public GameObject consumable;       /*!< <c>consumable</c> stores a reference to a target consumable. 
+                                        * This should be taken from <c>consumablesFound</c>, only whilst within the tank sensor. 
+                                        * Reference should be removed and refreshed every update. */
+
+    public GameObject enemyBase;        /*!< <c>enemyBase</c> stores a reference to a target enemy base. 
+                                         * This should be taken from <c>enemyBasesFound</c>, only whilst within the tank sensor. 
+                                        * Reference should be removed and refreshed every update. */
+
+    public GameObject myBase;         /*!< <c>myBase</c> stores a reference to an allied base. 
+                                        * This should be taken from <c>myBases</c>, at any time.  */
+
+    float t;    /*!< <c>t</c> stores timer value */
+    public HeuristicMode heuristicMode; /*!< <c>heuristicMode</c> Which heuristic used for find path. */
+
     private void InitializeStateMachine()
     {
         Dictionary<Type, NC_BaseState_FSM> states = new Dictionary<Type, NC_BaseState_FSM>();
@@ -50,6 +68,13 @@ public class NC_SmartTank_FSM : AITank
     }
     public void DefendAllyBase()
     {
+        if (MyBases.Count > 0)
+        {
+            myBase = MyBases[0];
+            
+
+        }
+
     }
 
 
