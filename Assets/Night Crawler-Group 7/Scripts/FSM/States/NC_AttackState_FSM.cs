@@ -12,24 +12,46 @@ public class NC_AttackState_FSM : NC_BaseState_FSM
         this.nC_SmartTank_FSM = nC_SmartTank_FSM;
     }
 
-    //each state will have these 3 functions and because they will follow the same structure the state machine will be able to talk to all the states 
-    // and switch between them eassily.
-
-    //what the state will do on entry
     public override Type StateEnter()
     {
         return null;
     }
 
-    //What a state will do when it updates every frame
     public override Type StateUpdate()
     {
-        return null;
+        // Target assigned by smart tank.
+        GameObject target = nC_SmartTank_FSM.NCEnTank;
+
+        // No target found then go to patrol state
+        if (target == null)
+        {
+            return typeof(NC_PatrolState_FSM);
+        }
+
+        // Target must currently be visible to attack
+        Dictionary<GameObject, float> visible = nC_SmartTank_FSM.VisibleEnemyTanks;
+        if (visible == null || !visible.ContainsKey(target))
+        {
+            return typeof(NC_PatrolState_FSM);
+        }
+
+        float distanceToTarget = visible[target];
+
+        // If target is less that 45f then attack otherwise pursue
+        if (distanceToTarget < 45f)
+        {
+            nC_SmartTank_FSM.TurretFaceWorldPoint(target);
+            nC_SmartTank_FSM.TurretFireAtPoint(target);
+            return null;
+        }
+
+
+        return typeof(NC_PursueState_FSM);
     }
 
-    //What a state will do when they leave
     public override Type StateExit()
     {
         return null;
     }
 }
+
