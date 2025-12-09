@@ -35,7 +35,7 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         // ======================================================
         //  🔹 PATROL MOVEMENT
         // ======================================================
-        tank.MoveTowards(patrolTarget);
+        // tank.MoveTowards(patrolTarget); ########################################################## No function exists
 
         // *If I reach the patrol point, I pick a new one*
         if (Vector3.Distance(tank.transform.position, patrolTarget) < 2.5f)
@@ -48,15 +48,16 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
         //  From the FSM table:
         //  Patrol → Pursue when TargetDistance > 52
         // ======================================================
-        float targetDistance = tank.GetDistanceToEnemy();
+        // float targetDistance = tank.GetDistanceToEnemy(); ########################################################## No function exists
 
         // *I check the one condition that triggers a state change*
-        if (targetDistance > 52f)
-        {
-            Debug.Log("FSM: Target distance > 52 → PURSUE");
-            Change.State(new NC_PursueState(tank));
+        
+        //if (targetDistance > 52f) ########################################## Cant aply while targetDistance doesnt exist
+        //{
+        //    Debug.Log("FSM: Target distance > 52 → PURSUE");
+        //    Change.State(new NC_PursueState(tank));
             
-        }
+        //}
         return null;
 
         // (No other transitions exist in FSM table for Patrol)
@@ -65,7 +66,8 @@ public class NC_PatrolState_FSM : NC_BaseScript_FSM
     public override Type StateExit()
     {
         // *I log that I am leaving the state*
-        tank.DebugMessage("EXITING PATRSOL");
+        Debug.Log("EXITING PATRSOL");
+        return null;
     }
 
     // ======================================================

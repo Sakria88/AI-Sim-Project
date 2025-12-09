@@ -20,14 +20,14 @@ public class NC_PursueState_FSM : NC_BaseScript_FSM
 
     public override Type StateEnter()
     {
-        NCEnTank.stats["PurseState"] = true; //When the State is entered it is running
+        // NCEnTank.stats["PurseState"] = true; //When the State is entered it is running #########################################################
         return null;
     }
 
     public override Type StateUpdate()
     {
 
-        NCEnTank.PursueState();
+        // NCEnTank.PursueState(); ##########################################################
 
 
         return null;
@@ -35,7 +35,7 @@ public class NC_PursueState_FSM : NC_BaseScript_FSM
 
     public override Type StateExit()
     {
-        NCEnTank.stats["PurseState"] = false; //When the state
+        // NCEnTank.stats["PurseState"] = false; //When the state ##################################################################
         return null;
     }
 }
