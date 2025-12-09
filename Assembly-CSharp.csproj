@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_BaseDefendState_FSM.cs" />
+    <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\NC_BaseState_FSM.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\TankScripts\AITank.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_PatrolState_FSM.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\NC_SmartTank_FSM.cs" />
@@ -68,7 +69,6 @@
     <Compile Include="Assets\Scripts\DO NOT MODIFY\AStarScripts\AStar.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_ScavengeState_FSM.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_RetreatState_FSM.cs" />
-    <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\NC_BaseScript_FSM.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\AStarScripts\Heuristic.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\GameController.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\AStarScripts\Heap.cs" />
@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\DO NOT MODIFY\MusicRandomScript.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_PursueState_FSM.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\Projectile.cs" />
+    <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_StateMachine_FSM.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_AttackState_FSM.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\UIControllerScript.cs" />
   </ItemGroup>

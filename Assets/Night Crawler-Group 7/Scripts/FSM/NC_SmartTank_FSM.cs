@@ -1,13 +1,39 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 using UnityEngine;
-using System;
 using static AStar;
 
 public class NC_SmartTank_FSM : AITank
 {
- // Start is called before the first frame update
-     public override void AITankStart()
+    private void InitializeStateMachine()
+    {
+        Dictionary<Type, NC_BaseState_FSM> states = new Dictionary<Type, NC_BaseState_FSM>();
+
+        states.Add(typeof(NC_PatrolState_FSM), new NC_PatrolState_FSM(this));
+        states.Add(typeof(NC_PursueState_FSM), new NC_PursueState_FSM(this));
+        states.Add(typeof(NC_AttackState_FSM), new NC_AttackState_FSM(this));
+        states.Add(typeof(NC_RetreatState_FSM), new NC_RetreatState_FSM(this));
+        states.Add(typeof(NC_ScavengeState_FSM), new NC_ScavengeState_FSM(this));
+        states.Add(typeof(NC_BaseAttackState_FSM), new NC_BaseAttackState_FSM(this));
+        states.Add(typeof(NC_BaseDefendState_FSM), new NC_BaseDefendState_FSM(this));
+
+
+
+        GetComponent<NC_BaseState_FSM>().SetStates(states);
+    }
+    private void Awake()
+    {
+        InitializeStateMachine();
+    }
+
+    public void AttackTarget()
+    {
+    }
+
+    // Start is called before the first frame update
+    public override void AITankStart()
     {
     }
     // Update is called once per frame
@@ -33,7 +59,7 @@ public class NC_SmartTank_FSM : AITank
     {
         a_FollowPathToPoint(pointInWorld, normalizedSpeed, heuristic);
     }
-public void FollowPathToRandomWorldPoint(float normalizedSpeed)
+    public void FollowPathToRandomWorldPoint(float normalizedSpeed)
     {
         a_FollowPathToRandomPoint(normalizedSpeed);
     }

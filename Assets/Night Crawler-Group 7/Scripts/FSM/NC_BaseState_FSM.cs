@@ -5,7 +5,7 @@ using System;
 
 
 //This base class is for setting the structure for the state classes 
-public abstract class NC_BaseScript_FSM
+public abstract class NC_BaseState_FSM
 {
     //each state will have these 3 functions and because they will follow the same structure the state machine will be able to talk to all the states 
     // and switch between them eassily.

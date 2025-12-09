@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class NC_AttackState_FSM : NC_BaseScript_FSM
+public class NC_AttackState_FSM : NC_BaseState_FSM
 {
+    private NC_SmartTank_FSM nC_SmartTank_FSM;
+
+    public NC_AttackState_FSM(NC_SmartTank_FSM nC_SmartTank_FSM)
+    {
+        this.nC_SmartTank_FSM = nC_SmartTank_FSM;
+    }
+
     //each state will have these 3 functions and because they will follow the same structure the state machine will be able to talk to all the states 
     // and switch between them eassily.
 
