@@ -5,26 +5,13 @@ using System;
 
 /// <summary>
 /// NightCrawler PATROL STATE (FSM ONLY)
-/// This version removes all Rule-Based System logic
-/// and follows ONLY the pure FSM transition table.
+/// This version follows ONLY the pure FSM transition table.
+/// Where do I want NCEnTank to come from?
+/// Option A — use the nearest enemy tank from: tank.VisibleEnemyTanks (This is a Dictionary<GameObject,float>) 
+/// Option B — use the enemyTank variable already included in NC_SmartTank_FSM: public GameObject enemyTank; 
+/// Option C — choose whichever enemy tank is closest 
 /// </summary>
 public class NC_PatrolState_FSM : NC_BaseState_FSM
-{
-    private NC_SmartTank_FSM tank;
-    private Vector3 patrolTarget;
-    private float patrolRadius = 25f;
-}
-
-    public override Type StateEnter()
-    {
-        Debug.Log("ENTERING PATROL (FSM ONLY)");
-
-        // I generate my first random patrol point when entering
-        SetNewPatrolPoint();
-        return null;
-    }
-
-    public class NC_PatrolState_FSM : NC_BaseState_FSM
 {
     private NC_SmartTank_FSM tank;
     private Vector3 patrolTarget;
@@ -35,34 +22,34 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
         tank = tankRef;
     }
 
+    // -------------------------------------------------
+    //  STATE ENTER
+    // -------------------------------------------------
     public override Type StateEnter()
     {
-        // *I log when switching into Patrol so debugging becomes easier later*
         Debug.Log("ENTERING PATROL (FSM ONLY)");
 
-        // *I select a patrol point so I can wander the map*
+        // I generate a new patrol point when entering this state
         SetNewPatrolPoint();
+
         return null;
-    
     }
 
+
+    //  -------------------------------------------------
+    //  STATE UPDATE
+    //  -------------------------------------------------
     public override Type StateUpdate()
     {
-        // ======================================================
-        //  🔹 PATROL MOVEMENT
-        // ======================================================
-        // tank.MoveTowards(patrolTarget); ########################################################## No function exists
+        // First, I select an enemy tank (A/B/C logic)
+        SelectEnemyTank();
 
-        // *If I reach the patrol point, I pick a new one*
-
-        if (Vector3.Distance(tank.transform.position, patrolTarget) < 2.5f)
-        {
-            SetNewPatrolPoint();
-        }
+        // If an enemy exists, I check distance for FSM transition
         if (tank.NCEnTank != null)
         {
-            // I calculate how far I am from the chosen enemy tank
-            float distanceToEnemy = Vector3.Distance(tank.transform.position, tank.NCEnTank.transform.position);
+            float distanceToEnemy = Vector3.Distance(
+                tank.transform.position,
+                tank.NCEnTank.transform.position);
 
             // From my FSM table: Patrol → Pursue when distance > 52
             if (distanceToEnemy > 52f)
@@ -70,43 +57,79 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
                 Debug.Log("FSM: Target distance > 52 → PURSUE");
                 return typeof(NC_PursueState_FSM);
             }
-            // ======================================================
-            //  🔹 FSM TRANSITION CHECK (NO RBS)
-            //  From the FSM table:
-            //  Patrol → Pursue when TargetDistance > 52
-            // ======================================================
-            // float targetDistance = tank.GetDistanceToEnemy(); ########################################################## No function exists
+        }
 
-            // *I check the one condition that triggers a state change*
+        // TODO: Add movement using FollowPathToWorldPoint if needed
 
-            //if (targetDistance > 52f) ########################################## Cant aply while targetDistance doesnt exist
-            //{
-            //    Debug.Log("FSM: Target distance > 52 → PURSUE");
-            //    Change.State(new NC_PursueState(tank));
-
-            //}
-            return null;
-
-        // (No other transitions exist in FSM table for Patrol)
+        return null; // stay in Patrol
     }
 
+
+    // -------------------------------------------------
+    //  STATE EXIT
+    // -------------------------------------------------
     public override Type StateExit()
     {
-        // *I log that I am leaving the state*
-        Debug.Log("EXITING PATRSOL");
+        Debug.Log("EXITING PATROL");
         return null;
     }
 
-    // ======================================================
-    // Helper: pick a random patrol point
-    // ======================================================
+
+    //  -------------------------------------------------
+    //  HELPER — Generate new random patrol point
+    //  -------------------------------------------------
     private void SetNewPatrolPoint()
     {
-        // *I wander by selecting a random point in a radius*
         Vector3 randomDir = UnityEngine.Random.insideUnitSphere * patrolRadius;
         randomDir.y = 0;
         patrolTarget = tank.transform.position + randomDir;
-        
     }
-   
+
+
+    //  -------------------------------------------------
+    //  HELPER — Create a temporary pathing point for A*
+    //  -------------------------------------------------
+    private GameObject CreateTempPoint(Vector3 position)
+    {
+        GameObject temp = new GameObject("PatrolPoint");
+        temp.transform.position = position;
+        return temp;
+    }
+
+
+    // -------------------------------------------------
+    //  ENEMY SELECTION (A, B, and C)
+    // -------------------------------------------------
+    private void SelectEnemyTank()
+    {
+        // OPTION A + C — Choose nearest visible enemy from sensor dictionary
+        Dictionary<GameObject, float> visibleEnemies = tank.VisibleEnemyTanks;
+
+        if (visibleEnemies.Count > 0)
+        {
+            float closestDistance = float.MaxValue;
+            GameObject closestEnemy = null;
+
+            foreach (var entry in visibleEnemies)
+            {
+                if (entry.Value < closestDistance)
+                {
+                    closestEnemy = entry.Key;
+                    closestDistance = entry.Value;
+                }
+            }
+
+            tank.NCEnTank = closestEnemy;
+            return;
+        }
+
+        // OPTION B — Use existing enemy stored in SmartTank
+        if (tank.NCEnTank != null)
+        {
+            return;
+        }
+
+       
+    }
 }
+
