@@ -21,16 +21,38 @@ public class NC_SmartTank_FSM : AITank
 
 
 
-        GetComponent<NC_BaseState_FSM>().SetStates(states);
+        GetComponent<NC_StateMachine_FSM>().SetStates(states);
     }
     private void Awake()
     {
         InitializeStateMachine();
     }
 
-    public void AttackTarget()
+    // Defitnition of behaviour of the different states
+
+    public void PatrolMap()
     {
     }
+    public void PursueEnemy()
+    {
+    }
+    public void AttackEnemy()
+    {
+    }
+    public void RetreatToSafety()
+    {
+    }
+    public void ScavengeResources()
+    {
+    }
+    public void AttackEnemyBase()
+    {
+    }
+    public void DefendAllyBase()
+    {
+    }
+
+
 
     // Start is called before the first frame update
     public override void AITankStart()
