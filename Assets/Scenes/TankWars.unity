@@ -44172,10 +44172,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58948fffe4733604497fe40f012a122f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turretObject: {fileID: 0}
   enemyTank: {fileID: 0}
   consumable: {fileID: 0}
   enemyBase: {fileID: 0}
   heuristicMode: 4
+  manualControl: 0
 --- !u!65 &1503203552
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -99752,6 +99754,7 @@ GameObject:
   - component: {fileID: 91697828574889090}
   - component: {fileID: 9162085611844313067}
   - component: {fileID: 8826225106348988319}
+  - component: {fileID: 9162085611844313068}
   m_Layer: 13
   m_Name: Tank
   m_TagString: Tank
@@ -100046,15 +100049,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8075740477363419617}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58948fffe4733604497fe40f012a122f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turretObject: {fileID: 0}
   enemyTank: {fileID: 0}
   consumable: {fileID: 0}
   enemyBase: {fileID: 0}
   heuristicMode: 2
+  manualControl: 0
 --- !u!23 &9012254866648180716
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -100403,6 +100408,24 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &9162085611844313068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8075740477363419617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2816333be89424498945d505479575, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turretObject: {fileID: 0}
+  NCEnTank: {fileID: 0}
+  consumable: {fileID: 0}
+  NCEnBase: {fileID: 0}
+  myBase: {fileID: 0}
+  heuristicMode: 0
 --- !u!1 &9177135291343502959
 GameObject:
   m_ObjectHideFlags: 0
