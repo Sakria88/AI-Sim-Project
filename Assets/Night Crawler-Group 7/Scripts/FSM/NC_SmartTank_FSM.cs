@@ -78,24 +78,6 @@ private void RefreshBaseTargets()
 
     // Defitnition of behaviour of the different states
 
-    public void PatrolMap()
-    {
-    }
-    public void PursueEnemy()
-    {
-    }
-    public void AttackEnemy()
-    {
-    }
-    public void RetreatToSafety()
-    {
-    }
-    public void ScavengeResources()
-    {
-    }
-    public void AttackEnemyBase()
-    {
-    }
     public void DefendAllyBase()
     {
         myBase = MyBases[0];
@@ -122,16 +104,19 @@ private void RefreshBaseTargets()
 
     }
     // Start is called before the first frame update
-    public override void AITankStart()
-    {
-    }
-    // Update is called once per frame
-    public override void AITankUpdate()
-    {
-    }
-    public override void AIOnCollisionEnter(Collision collision)
-    {
-    }
+  
+   // Start is called before the first frame update
+   public override void AITankStart()
+   {
+   }
+   // Update is called once per frame
+   public override void AITankUpdate()
+   {
+   }
+   public override void AIOnCollisionEnter(Collision collision)
+   {
+   }
+
     public void GeneratePathToWorldPoint(GameObject pointInWorld)
     {
         a_FindPathToPoint(pointInWorld);
