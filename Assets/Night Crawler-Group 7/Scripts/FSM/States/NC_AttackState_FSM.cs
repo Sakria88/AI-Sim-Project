@@ -19,16 +19,16 @@ public class NC_AttackState_FSM : NC_BaseState_FSM
 
     public override Type StateUpdate()
     {
-        // Target assigned by smart tank.
+        // target assigned by smart tank.
         GameObject target = nC_SmartTank_FSM.NCEnTank;
 
-        // No target found then go to patrol state
+        // no target found then go to patrol state
         if (target == null)
         {
             return typeof(NC_PatrolState_FSM);
         }
 
-        // Target must currently be visible to attack
+        // target must currently be visible to attack
         Dictionary<GameObject, float> visible = nC_SmartTank_FSM.VisibleEnemyTanks;
         if (visible == null || !visible.ContainsKey(target))
         {
@@ -37,7 +37,7 @@ public class NC_AttackState_FSM : NC_BaseState_FSM
 
         float distanceToTarget = visible[target];
 
-        // If target is less that 45f then attack otherwise pursue
+        // if target is less that 45f then attack otherwise pursue
         if (distanceToTarget < 45f)
         {
             nC_SmartTank_FSM.TurretFaceWorldPoint(target);
