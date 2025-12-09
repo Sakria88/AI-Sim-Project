@@ -5,7 +5,7 @@ using System;
 
 /// <summary>
 /// NightCrawler PATROL STATE (FSM ONLY)
-/// This version follows ONLY the pure FSM transition table.
+/// following FSM transition table.
 /// Where do I want NCEnTank to come from?
 /// Option A — use the nearest enemy tank from: tank.VisibleEnemyTanks (This is a Dictionary<GameObject,float>) 
 /// Option B — use the enemyTank variable already included in NC_SmartTank_FSM: public GameObject enemyTank; 
