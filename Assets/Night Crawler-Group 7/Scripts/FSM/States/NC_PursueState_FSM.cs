@@ -9,33 +9,64 @@ public class NC_PursueState_FSM : NC_BaseState_FSM
 
 
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
+    private NC_SmartTank_FSM tank;
     private NC_SmartTank_FSM NCEnTank;
 
-    public NC_PursueState_FSM(NC_SmartTank_FSM NCEnTank)
+    public NC_PursueState_FSM(NC_SmartTank_FSM NCTank)
     {
-        this.NCEnTank = NCEnTank;
+        this.tank = NCTank;
       
     
     }
 
     public override Type StateEnter()
     {
-        // NCEnTank.stats["PurseState"] = true; //When the State is entered it is running #########################################################
+        //
+       // Debug.log("Entering the pursue state FSM");
+
+
         return null;
     }
 
     public override Type StateUpdate()
     {
+        
+        //
+        //if ( VisibleEnemyTank.First().key != null)
+        
+           // tank.NCEnTank = VisibleEnemyTank.First().key;
+            if(tank.NCEnTank != null) //If enemy tank is there
+            {
+            //Store the distance between the tank and enemy tank as a varible
+            float Distance = Vector3.Distance(tank.transform.position, tank.NCEnTank.transform.position);
+               
+                if (Distance < 30f) //If the distance between the tank and enemy is less than 30
+                {
+                    return typeof(NC_AttackState_FSM);//switch to the attack state
 
-        // NCEnTank.PursueState(); ##########################################################
+                }
+            }
+            else
+            {
+                //FollowPathToWorldPoint(NCEnTank, 1f, heuristicMode);
+                PursueEnemy(); //If not less thank 30 keep pursuing
+            }
+        
 
-
+        
         return null;
+    }
+
+    public void PursueEnemy()//function to keep pursing
+    {
+        tank.FollowPathToWorldPoint(tank.NCEnTank, 1f, tank.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
     }
 
     public override Type StateExit()
     {
-        // NCEnTank.stats["PurseState"] = false; //When the state ##################################################################
+       // Debug.log("Exiting the purse state");
+        // 
+
         return null;
     }
 }
