@@ -32,7 +32,7 @@ public abstract class AITank : MonoBehaviour
     private ParticleSystem TankExplosionParticle;
     private ParticleSystem fireParticle;
     private ParticleSystem.EmissionModule smokePartEmission;
-    private GameObject turretObject;
+    public GameObject turretObject;
     private AStar aStarScript; /*!< Reference to <c>AStar</c> script for pathfinding */
     private List<GameObject> myBases = new List<GameObject>(); /*!< List of freindly bases */
     private Rigidbody rb;

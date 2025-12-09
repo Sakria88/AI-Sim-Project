@@ -25,6 +25,8 @@ public class DumbTank : AITank
     float t;    /*!< <c>t</c> stores timer value */
     public HeuristicMode heuristicMode; /*!< <c>heuristicMode</c> Which heuristic used for find path. */
 
+    public bool manualControl = false; /*!< <c>manualControl</c> If true, tank will not use AI functions. */
+
     /// <summary>
     ///WARNING, do not use void <c>Start()</c> function, use this <c>AITankStart()</c> function instead if you want to use Start method from Monobehaviour.
     ///Use this function to initialise your tank variables etc.
@@ -40,6 +42,12 @@ public class DumbTank : AITank
     /// </summary>
     public override void AITankUpdate()
     {
+        if (manualControl) //if manual control is set, do not use AI
+        {
+            ManualControlUpdate();
+            return;
+        }
+
         //if low health or ammo, go searching
         if (TankCurrentHealth < 30 || TankCurrentAmmo < 4)
         {
@@ -124,6 +132,68 @@ public class DumbTank : AITank
             
         }
     }
+
+    /// <summary>
+    /// Function <c>ManualControlUpdate</c> allows for player control of the tank using keyboard inputs.
+    /// W/S for forward/backward movement, A/D for body rotation, Q/E for turret rotation, and SPACE to fire.
+    /// </summary>
+    private void ManualControlUpdate()
+    {
+        Rigidbody rb = GetComponent<Rigidbody>();
+
+        float forwardInput = 0f;
+        float turnInput = 0f;
+
+        // -------------------------
+        //      MOVIMIENTO
+        // -------------------------
+        if (Input.GetKey(KeyCode.W)) forwardInput = 20f;
+        if (Input.GetKey(KeyCode.S)) forwardInput = -20f;
+
+        float speed = 1700f; // moveSpeed AITank
+
+        rb.AddRelativeForce(Vector3.forward * (speed * forwardInput), ForceMode.Force);
+
+        float max = 22f; // tankMaxSpeed
+        rb.velocity = Vector3.ClampMagnitude(rb.velocity, max);
+
+
+        // -------------------------
+        //      TURN
+        // -------------------------
+        if (Input.GetKey(KeyCode.A)) turnInput = -1f;
+        if (Input.GetKey(KeyCode.D)) turnInput = 1f;
+
+
+        float turnSpeed = 2f;
+        transform.Rotate(0, turnInput * turnSpeed, 0);
+
+
+        // -------------------------
+        //      TURRET
+        // -------------------------
+        Transform turret = transform.Find("Model").Find("Turret");
+
+        if (Input.GetKey(KeyCode.Q))
+            turret.Rotate(0, -2f, 0);
+
+        if (Input.GetKey(KeyCode.E))
+            turret.Rotate(0, 2f, 0);
+
+
+        // -------------------------
+        //      FIRE
+        // -------------------------
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            GameObject temp = new GameObject("TurretForwardTarget");
+            temp.transform.position = turret.position + turret.forward * 100f;
+            
+            a_FireAtPoint(temp);
+        }
+    }
+
+
 
     /// <summary>
     ///WARNING, do not use void <c>OnCollisionEnter()</c> function, use this <c>AIOnCollisionEnter()</c> function instead if you want to use OnColiisionEnter function from Monobehaviour.
