@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.UI.Selectable;
 
 public class NC_AttackState_FSM : NC_BaseState_FSM
 {
@@ -19,34 +22,32 @@ public class NC_AttackState_FSM : NC_BaseState_FSM
 
     public override Type StateUpdate()
     {
-        // target assigned by smart tank.
-        GameObject target = nC_SmartTank_FSM.NCEnTank;
-
-        // no target found then go to patrol state
-        if (target == null)
+        if (nC_SmartTank_FSM.TankCurrentHealth < 35f)
+        {
+            return typeof(NC_RetreatState_FSM);
+        }
+        else if (nC_SmartTank_FSM.TankCurrentFuel < 35f || nC_SmartTank_FSM.TankCurrentAmmo == 0)
+        {
+            return typeof(NC_ScavengeState_FSM);
+        }
+        else if (nC_SmartTank_FSM.NCEnTank != null)
+        {
+            float distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
+            if (distance > 30f)
+            {
+                return typeof(NC_PursueState_FSM);
+            }
+            else
+            {
+                // Attack logic
+                nC_SmartTank_FSM.TurretFireAtPoint(nC_SmartTank_FSM.NCEnTank);
+            }
+        }
+        else
         {
             return typeof(NC_PatrolState_FSM);
         }
-
-        // target must currently be visible to attack
-        Dictionary<GameObject, float> visible = nC_SmartTank_FSM.VisibleEnemyTanks;
-        if (visible == null || !visible.ContainsKey(target))
-        {
-            return typeof(NC_PatrolState_FSM);
-        }
-
-        float distanceToTarget = visible[target];
-
-        // if target is less that 45f then attack otherwise pursue
-        if (distanceToTarget < 45f)
-        {
-            nC_SmartTank_FSM.TurretFaceWorldPoint(target);
-            nC_SmartTank_FSM.TurretFireAtPoint(target);
-            return null;
-        }
-
-
-        return typeof(NC_PursueState_FSM);
+        return null;
     }
 
     public override Type StateExit()

@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System;
 using System.Linq;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.UI.Selectable;
 
 //This class is for the purse state-the purse state goes after the enemy tank
 public class NC_PursueState_FSM : NC_BaseState_FSM
@@ -24,42 +26,29 @@ public class NC_PursueState_FSM : NC_BaseState_FSM
     public override Type StateUpdate()
     {
         Debug.Log("I'm Updating Pursue State");
-        if(nC_SmartTank_FSM.VisibleEnemyTanks.Count > 0)
+        
+        if (nC_SmartTank_FSM.TankCurrentHealth < 35 || nC_SmartTank_FSM.TankCurrentFuel < 35 || nC_SmartTank_FSM.TankCurrentAmmo < 3) //If health or fuel is less than 35 or ammo is less than 3
         {
-            nC_SmartTank_FSM.NCEnTank = nC_SmartTank_FSM.VisibleEnemyTanks.First().Key;
-            if(nC_SmartTank_FSM.NCEnTank != null)
+            return typeof(NC_ScavengeState_FSM); //Switch to scavenge state
+        } else {
+            if (nC_SmartTank_FSM.NCEnTank != null) //If enemy tank is there
             {
+                //Store the distance between the tank and enemy tank as a varible
                 float Distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
-                if (Distance < 45f) //If the distance between the tank and enemy is less than 45
+                if (Distance < 25f) //If the distance between the tank and enemy is less than 25
                 {
                     return typeof(NC_AttackState_FSM);//switch to the attack state
+                } else
+                {
+                    PursueEnemy(); //If not less thank 25 keep pursuing
                 }
             }
-        }
-        else
-        {
-            PursueEnemy();
+            else
+            {
+                return typeof(NC_PatrolState_FSM); //If enemy tank is lost switch to patrol state
+            }
         }
         return null;
-        //if (VisibleEnemyTank.First().key != null)
-
-        //    // tank.NCEnTank = VisibleEnemyTank.First().key;
-        //    if (nC_SmartTank_FSM.NCEnTank != null) //If enemy tank is there
-        //    {
-        //        //Store the distance between the tank and enemy tank as a varible
-        //        float Distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
-
-        //        if (Distance < 30f) //If the distance between the tank and enemy is less than 30
-        //        {
-        //            return typeof(NC_AttackState_FSM);//switch to the attack state
-
-        //        }
-        //    }
-        //    else
-        //    {
-        //        //FollowPathToWorldPoint(NCEnTank, 1f, heuristicMode);
-        //        PursueEnemy(); //If not less thank 30 keep pursuing
-        //}
     }
 
     public void PursueEnemy()//function to keep pursing
