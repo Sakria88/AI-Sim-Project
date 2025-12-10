@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using UnityEngine;
 using static AStar;
@@ -24,10 +25,10 @@ public class NC_SmartTank_FSM : AITank
 
     float t;    /*!< <c>t</c> stores timer value */
     public HeuristicMode heuristicMode; /*!< <c>heuristicMode</c> Which heuristic used for find path. */
-   private void Awake()
-    {
-        InitializeStateMachine();
-    }
+    //private void Awake()
+    // {
+    //     InitializeStateMachine();
+    // }
 
     private void InitializeStateMachine()
     {
@@ -45,35 +46,36 @@ public class NC_SmartTank_FSM : AITank
 
         GetComponent<NC_StateMachine_FSM>().SetStates(states);
     }
-   private void Update()
-    {
-        RefreshBaseTargets();
-    }
-private void RefreshBaseTargets()
-{
-    // check for visible enemy bases and choose the closest one
-    if (VisibleEnemyBases.Count > 0)
-    {
-        float closest = float.MaxValue;
-        GameObject closestBase = null;
+   //private void Update()
+   // {
+   //     RefreshBaseTargets();
+   // }
 
-        foreach (var entry in VisibleEnemyBases)
-        {
-            if (entry.Value < closest)
-            {
-                closest = entry.Value;
-                closestBase = entry.Key;
-            }
-        }
+    //private void RefreshBaseTargets()
+    //{
+    //    // check for visible enemy bases and choose the closest one
+    //    if (VisibleEnemyBases.Count > 0)
+    //    {
+    //        float closest = float.MaxValue;
+    //        GameObject closestBase = null;
 
-        NCEnBase = closestBase;
-    }
-    else
-    {
-        // No bases visible → leave NCEnBase unchanged 
-        // (so states can fall back to BaseDefend)
-    }
-}
+    //        foreach (var entry in VisibleEnemyBases)
+    //        {
+    //            if (entry.Value < closest)
+    //            {
+    //                closest = entry.Value;
+    //                closestBase = entry.Key;
+    //            }
+    //        }
+
+    //        NCEnBase = closestBase;
+    //    }
+    //    else
+    //    {
+    //        // No bases visible → leave NCEnBase unchanged 
+    //        // (so states can fall back to BaseDefend)
+    //    }
+    //}
 
 
     // Defitnition of behaviour of the different states
@@ -104,15 +106,23 @@ private void RefreshBaseTargets()
 
     }
     // Start is called before the first frame update
-  
+    public void RandomRoam()
+    {
+        FollowPathToRandomWorldPoint(1f, heuristicMode);
+    }
    // Start is called before the first frame update
    public override void AITankStart()
    {
-   }
+        InitializeStateMachine();
+    }
    // Update is called once per frame
    public override void AITankUpdate()
    {
-   }
+        if (VisibleEnemyTanks.Count > 0 && VisibleEnemyTanks.First().Key != null)
+        {
+            NCEnTank = VisibleEnemyTanks.First().Key;
+        }
+    }
    public override void AIOnCollisionEnter(Collision collision)
    {
    }

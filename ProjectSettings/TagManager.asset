@@ -3,7 +3,16 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Projectile
+  - Health
+  - Ammo
+  - Fuel
+  - Obstacle
+  - Tank
+  - ObstacleRock
+  - UI
+  - Base
   layers:
   - Default
   - TransparentFX
@@ -13,13 +22,13 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Ground
+  - Tank
+  - Obstacle
+  - Rock
+  - Consumable
+  - TankMain
+  - Base
   - 
   - 
   - 

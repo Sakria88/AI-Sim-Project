@@ -48,10 +48,13 @@ public class NC_StateMachine_FSM : MonoBehaviour
     {
         if (CurrentState == null) // If no current state is set set it to the first state in the dictionary
         {
+            Debug.Log("If clause");
             CurrentState = states.Values.First();
         }
         else
         {
+            Debug.Log(CurrentState);
+
             var nextState = CurrentState.StateUpdate(); // Call StateUpdate on the current state to determine the next state
             if (nextState != null && nextState != CurrentState.GetType()) // If a next state is returned and it's different from the current state
             {

@@ -41,27 +41,41 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
     //  -------------------------------------------------
     public override Type StateUpdate()
     {
-        // First, I select an enemy tank (A/B/C logic)
-        SelectEnemyTank();
-
-        // If an enemy exists, I check distance for FSM transition
         if (tank.NCEnTank != null)
         {
-            float distanceToEnemy = Vector3.Distance(
-                tank.transform.position,
-                tank.NCEnTank.transform.position);
-
-            // From my FSM table: Patrol → Pursue when distance > 52
-            if (distanceToEnemy > 52f)
+            if (Vector3.Distance(tank.transform.position,
+                tank.NCEnTank.transform.position) < 52f) // If the target is within 3 units chase it
             {
-                Debug.Log("FSM: Target distance > 52 → PURSUE");
                 return typeof(NC_PursueState_FSM);
             }
         }
+        else // else continue roaming
+        {
+            tank.RandomRoam();
+            return null;
+        }
+        return null;
+        //// First, I select an enemy tank (A/B/C logic)
+        //SelectEnemyTank();
 
-        // TODO: Add movement using FollowPathToWorldPoint if needed
+        //// If an enemy exists, I check distance for FSM transition
+        //if (tank.NCEnTank != null)
+        //{
+        //    float distanceToEnemy = Vector3.Distance(
+        //        tank.transform.position,
+        //        tank.NCEnTank.transform.position);
 
-        return null; // stay in Patrol
+        //    // From my FSM table: Patrol → Pursue when distance > 52
+        //    if (distanceToEnemy < 52f)
+        //    {
+        //        Debug.Log("FSM: Target distance > 52 → PURSUE");
+        //        return typeof(NC_PursueState_FSM);
+        //    }
+        //}
+
+        //// TODO: Add movement using FollowPathToWorldPoint if needed
+
+        //return null; // stay in Patrol
     }
 
 
