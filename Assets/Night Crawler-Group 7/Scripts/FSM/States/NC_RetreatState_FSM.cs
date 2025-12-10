@@ -11,17 +11,12 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
     public NC_RetreatState_FSM(NC_SmartTank_FSM NCTank)
     {
         this.nC_SmartTank_FSM = NCTank;
-
-
     }
-
 
     public override Type StateEnter()
     {
         return null;
     }
-
-  
 
     public override Type StateUpdate()
     {
@@ -54,20 +49,13 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
 
       */
 
-        if (nC_SmartTank_FSM.NCEnTank != null)
-        {
-            float Distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
-
-            if (Distance <=52f) //If the distance between the tank and enemy is equal to and less than 52
-            {
-                //generate a random point in the world and go to it
-
+        
+        if (nC_SmartTank_FSM.NCEnTank != null )
+        {   //generate a random point in the world and go to it
                 FindRetreat_Path();
-            }
         }
         else
         {
-           
             return typeof(NC_ScavengeState_FSM); //If not Switch state
         }
 
@@ -77,6 +65,11 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
 
    public void FindRetreat_Path()
     {
+        // Generate Point away from enemy
+
+        nC_SmartTank_FSM.FollowPathToWorldPoint(nC_SmartTank_FSM.NCEnTank, 1f, nC_SmartTank_FSM.heuristicMode);
+
+        nC_SmartTank_FSM.GenerateNewRandomWorldPoint();
         nC_SmartTank_FSM.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSM.heuristicMode);
 
     }
@@ -86,6 +79,7 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
 
     public override Type StateExit()
     {
+
         return null;
 
     }
