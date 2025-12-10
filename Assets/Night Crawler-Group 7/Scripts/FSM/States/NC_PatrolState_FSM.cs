@@ -81,6 +81,7 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
                 closestTank = entry.Key;
             }
         }
+        return null;
 
         tank.NCEnTank = closestTank;
         return typeof(NC_PursueState_FSM);
@@ -110,7 +111,6 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
         exploreTimer = 0f;
     }
 
-    // stay in Patrol
     return null;
 }
 public override Type StateExit()
@@ -118,5 +118,4 @@ public override Type StateExit()
     Debug.Log("EXITING PATROL");
     return null;
 }
-
 }
