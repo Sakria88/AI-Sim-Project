@@ -16,6 +16,10 @@ public class NC_SmartTank_FSM : AITank
                                         * This should be taken from <c>consumablesFound</c>, only whilst within the tank sensor. 
                                         * Reference should be removed and refreshed every update. */
 
+    public GameObject consumableHealth;
+    public GameObject consumableAmmo;
+    public GameObject consumableFuel;
+
     public GameObject NCEnBase;        /*!< <c>enemyBase</c> stores a reference to a target enemy base. 
                                          * This should be taken from <c>enemyBasesFound</c>, only whilst within the tank sensor. 
                                         * Reference should be removed and refreshed every update. */
@@ -82,8 +86,48 @@ public class NC_SmartTank_FSM : AITank
    // Update is called once per frame
    public override void AITankUpdate()
    {
+        // Update visible objects, enemy tanks, bases and consumables
+        if(VisibleEnemyTanks.Count > 0)
+        {
+            NCEnTank = VisibleEnemyTanks.First().Key;
+        }
+        else
+        {
+            NCEnTank = null;
+        }
+
+        if(VisibleEnemyBases.Count > 0)
+        {
+            NCEnBase = VisibleEnemyBases.First().Key;
+        }
+
+        if(VisibleConsumables.Count > 0)
+        {
+            consumable = VisibleConsumables.First().Key;
+        }
+        else
+        {
+            consumable = null;
+        }
+
+        foreach(var entry in VisibleConsumables)
+        {
+            if(entry.Key.name.Contains("Health"))
+            {
+                consumableHealth = entry.Key;
+            }
+            else if(entry.Key.name.Contains("Ammo"))
+            {
+                consumableAmmo = entry.Key;
+            }
+            else if(entry.Key.name.Contains("Fuel"))
+            {
+                consumableFuel = entry.Key;
+            }
+        }
+
     }
-   public override void AIOnCollisionEnter(Collision collision)
+    public override void AIOnCollisionEnter(Collision collision)
    {
    }
 

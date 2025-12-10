@@ -36,7 +36,10 @@ public class NC_PursueState_FSM : NC_BaseState_FSM
                 }
             }
         }
-        PursueEnemy();
+        else
+        {
+            PursueEnemy();
+        }
         return null;
         //if (VisibleEnemyTank.First().key != null)
 
