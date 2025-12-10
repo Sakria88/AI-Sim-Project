@@ -25,10 +25,6 @@ public class NC_SmartTank_FSM : AITank
 
     float t;    /*!< <c>t</c> stores timer value */
     public HeuristicMode heuristicMode; /*!< <c>heuristicMode</c> Which heuristic used for find path. */
-    //private void Awake()
-    // {
-    //     InitializeStateMachine();
-    // }
 
     private void InitializeStateMachine()
     {
@@ -42,44 +38,10 @@ public class NC_SmartTank_FSM : AITank
         states.Add(typeof(NC_BaseAttackState_FSM), new NC_BaseAttackState_FSM(this));
         states.Add(typeof(NC_BaseDefendState_FSM), new NC_BaseDefendState_FSM(this));
 
-
-
         GetComponent<NC_StateMachine_FSM>().SetStates(states);
     }
-   //private void Update()
-   // {
-   //     RefreshBaseTargets();
-   // }
 
-    //private void RefreshBaseTargets()
-    //{
-    //    // check for visible enemy bases and choose the closest one
-    //    if (VisibleEnemyBases.Count > 0)
-    //    {
-    //        float closest = float.MaxValue;
-    //        GameObject closestBase = null;
-
-    //        foreach (var entry in VisibleEnemyBases)
-    //        {
-    //            if (entry.Value < closest)
-    //            {
-    //                closest = entry.Value;
-    //                closestBase = entry.Key;
-    //            }
-    //        }
-
-    //        NCEnBase = closestBase;
-    //    }
-    //    else
-    //    {
-    //        // No bases visible → leave NCEnBase unchanged 
-    //        // (so states can fall back to BaseDefend)
-    //    }
-    //}
-
-
-    // Defitnition of behaviour of the different states
-
+    // Definition of behaviour of the different states
     public void DefendAllyBase()
     {
         myBase = MyBases[0];
@@ -110,18 +72,16 @@ public class NC_SmartTank_FSM : AITank
     {
         FollowPathToRandomWorldPoint(1f, heuristicMode);
     }
+
    // Start is called before the first frame update
    public override void AITankStart()
    {
         InitializeStateMachine();
     }
+
    // Update is called once per frame
    public override void AITankUpdate()
    {
-        if (VisibleEnemyTanks.Count > 0 && VisibleEnemyTanks.First().Key != null)
-        {
-            NCEnTank = VisibleEnemyTanks.First().Key;
-        }
     }
    public override void AIOnCollisionEnter(Collision collision)
    {
