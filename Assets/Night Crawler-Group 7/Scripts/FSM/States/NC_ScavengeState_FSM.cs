@@ -19,6 +19,7 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
 
     public override Type StateEnter()
     {
+        Debug.Log("Entering the scavenge state FSM");
         patrolIndex = 0;
         // makes sure tank starts moving normally, good practice for reducing bugs
         nC_SmartTank_FSM.TankGo();
@@ -57,22 +58,22 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
                     new Vector3(-85, 0, 85)
                 };
                 // Move to the next patrol point
-                nC_SmartTank_FSM.MoveToPatrolPoint(patrolPoints[patrolIndex]);
+                GameObject point = nC_SmartTank_FSM.CreateWorldPoint(patrolPoints[patrolIndex]);
+                nC_SmartTank_FSM.FollowPathToWorldPoint(point, 1f, nC_SmartTank_FSM.heuristicMode);
+
                 // Check if the tank is close enough to the patrol point to switch to the next one
                 if (Vector3.Distance(nC_SmartTank_FSM.transform.position, patrolPoints[patrolIndex]) < 5f)
                 {
                     patrolIndex = (patrolIndex + 1) % patrolPoints.Length; // Loop back to the first point
                 }
-
-
             }
         }
-
             return null; // stays in Scavenge state
     }
 
     public override Type StateExit()
     {
+        Debug.Log("Exiting the scavenge state");
         // reset turret and allow tank to move normally again, prevents bugs for next state
         nC_SmartTank_FSM.TurretReset();
         nC_SmartTank_FSM.TankGo();

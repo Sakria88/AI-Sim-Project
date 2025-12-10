@@ -24,9 +24,7 @@ public class NC_PursueState_FSM : NC_BaseState_FSM
     }
 
     public override Type StateUpdate()
-    {
-        Debug.Log("I'm Updating Pursue State");
-        
+    {        
         if (nC_SmartTank_FSM.TankCurrentHealth < 35 || nC_SmartTank_FSM.TankCurrentFuel < 35 || nC_SmartTank_FSM.TankCurrentAmmo < 3) //If health or fuel is less than 35 or ammo is less than 3
         {
             return typeof(NC_ScavengeState_FSM); //Switch to scavenge state

@@ -17,6 +17,7 @@ public class NC_AttackState_FSM : NC_BaseState_FSM
 
     public override Type StateEnter()
     {
+        Debug.Log("Entering the attack state FSM");
         return null;
     }
 
@@ -52,6 +53,7 @@ public class NC_AttackState_FSM : NC_BaseState_FSM
 
     public override Type StateExit()
     {
+        Debug.Log("Exiting the attack state");
         return null;
     }
 }

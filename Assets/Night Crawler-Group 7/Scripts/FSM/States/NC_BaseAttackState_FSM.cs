@@ -105,7 +105,9 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
         if (fireTimer >= fireDuration)
         {
             Debug.Log("Burst complete → switching to BaseDefend");
-            return typeof(NC_BaseDefendState_FSM);
+            //return typeof(NC_BaseDefendState_FSM);
+            return typeof(NC_PatrolState_FSM);
+
         }
 
         // ==========================================================
