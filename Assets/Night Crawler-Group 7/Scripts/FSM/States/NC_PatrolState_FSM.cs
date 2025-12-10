@@ -3,16 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-/// <summary>
-/// NightCrawler PATROL STATE (FSM ONLY)
-/// following FSM transition table.
-/// </summary>
 public class NC_PatrolState_FSM : NC_BaseState_FSM
 {
     private NC_SmartTank_FSM tank;
-    private float exploreTimer= 0;
-
-    private float exploreInterval = 2.5f; // how often I choose a new random map point
+    private float exploreTimer = 0f;
+    private float exploreInterval = 2.5f;
 
     public NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
     {
@@ -22,100 +17,111 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
     public override Type StateEnter()
     {
         Debug.Log("ENTERING PATROL (GLOBAL SEARCH MODE)");
-
-        //reset exploration timer
         exploreTimer = 0f;
-
         return null;
     }
 
     public override Type StateUpdate()
-{
-    // I increase my timer so I know when to pick a new random destination
-    exploreTimer += Time.deltaTime;
-
-    // --------------------------------------------
-    // 1. HIGH PRIORITY → CHECK FOR CONSUMABLES FIRST
-    // --------------------------------------------
-    if (tank.VisibleConsumables.Count > 0)
     {
-        return typeof(NC_ScavengeState_FSM);
-    }
+        exploreTimer += Time.deltaTime;
 
-    // --------------------------------------------
-    // 2. SECOND PRIORITY → CHECK FOR ENEMY BASES
-    // --------------------------------------------
-    if (tank.VisibleEnemyBases.Count > 0)
-    {
-        float closest = float.MaxValue;
-        GameObject closestBase = null;
-
-        foreach (var entry in tank.VisibleEnemyBases)
+        // ------------------------------------------------
+        // HEALTH | FUEL CHECK → SCAVENGE
+        // ------------------------------------------------
+        if (tank.TankCurrentHealth < 35f || tank.TankCurrentFuel < 35f)
         {
-            if (entry.Value < closest)
-            {
-                closest = entry.Value;
-                closestBase = entry.Key;
-            }
+            return typeof(NC_ScavengeState_FSM);
         }
 
-        // I store this base so my next state knows the correct target
-        tank.NCEnBase = closestBase;
-
-        return typeof(NC_BaseAttackState_FSM);
-    }
-
-    // --------------------------------------------
-    // 3. THIRD PRIORITY → CHECK FOR ENEMY TANKS
-    // --------------------------------------------
-    if (tank.VisibleEnemyTanks.Count > 0)
-    {
+        // ------------------------------------------------
+        // CONSUMABLE WITHIN 52 → SCAVENGE
+        // ------------------------------------------------
+        if (tank.VisibleEnemyTanks.Count > 0)
+       {
         float closestTankDist = float.MaxValue;
         GameObject closestTank = null;
 
         foreach (var entry in tank.VisibleEnemyTanks)
-        {
-            if (entry.Value < closestTankDist)
-            {
-                closestTankDist = entry.Value;
-                closestTank = entry.Key;
-            }
-        }
-        return null;
+         {
+          if (entry.Value < closestTankDist)
+          {
+            closestTankDist = entry.Value;
+            closestTank = entry.Key;
+          }
+       }
 
+    if (closestTankDist < 52f)
+    {
         tank.NCEnTank = closestTank;
         return typeof(NC_PursueState_FSM);
     }
-        //if (nC_SmartTank_FSM.VisibleEnemyTanks.Count > 0)
-        //{
-        //    nC_SmartTank_FSM.NCEnTank = nC_SmartTank_FSM.VisibleEnemyTanks.First().Key;
-        //    if (nC_SmartTank_FSM.NCEnTank != null)
-        //    {
-        //        return typeof(NC_PursueState_FSM);//switch to the attack state
-        //    }
-        //}
-        //else
-        //{
-        //    nC_SmartTank_FSM.FollowPathToRandomWorldPoint(0.5f, nC_SmartTank_FSM.heuristicMode);
-        //}
-        // --------------------------------------------
-        // 4. CONTINUOUS MOVEMENT ACROSS THE MAP
-        // --------------------------------------------
-        // I force the tank to always move along its current path
+  }
+
+        // ------------------------------------------------
+        // ENEMY BASE WITHIN 52 → BASE ATTACK
+        // ------------------------------------------------
+        if (tank.VisibleEnemyBases.Count > 0)
+        {
+            float closest = float.MaxValue;
+            GameObject baseObj = null;
+
+            foreach (var entry in tank.VisibleEnemyBases)
+            {
+                if (entry.Value < closest)
+                {
+                    closest = entry.Value;
+                    baseObj = entry.Key;
+                }
+            }
+
+            if (closest < 52f)
+            {
+                tank.NCEnBase = baseObj;
+                return typeof(NC_BaseAttackState_FSM);
+            }
+        }
+
+        // ---------------------------------------
+        // ENEMY TANK WITHIN 52 → PURSUE
+        // ---------------------------------------
+        if (tank.VisibleEnemyTanks.Count > 0)
+        {
+            float closestT = float.MaxValue;
+            GameObject enemy = null;
+
+            foreach (var entry in tank.VisibleEnemyTanks)
+            {
+                if (entry.Value < closestT)
+                {
+                    closestT = entry.Value;
+                    enemy = entry.Key;
+                }
+            }
+
+            if (closestT < 52f)
+            {
+                tank.NCEnTank = enemy;
+                return typeof(NC_PursueState_FSM);
+            }
+        }
+
+        // ------------------------------------------------
+        // CONTINUOUS MOVEMENT ACROSS THE WHOLE MAP
+        // ------------------------------------------------
         tank.FollowPathToRandomWorldPoint(1f, tank.heuristicMode);
 
-    // Every few seconds, I choose a new random point to explore
-    if (exploreTimer >= exploreInterval)
-    {
-        tank.FollowPathToRandomWorldPoint(1f, tank.heuristicMode);
-        exploreTimer = 0f;
+        if (exploreTimer >= exploreInterval)
+        {
+            tank.FollowPathToRandomWorldPoint(1f, tank.heuristicMode);
+            exploreTimer = 0f;
+        }
+
+        return null; // stay in patrol
     }
 
-    return null;
-}
-public override Type StateExit()
-{
-    Debug.Log("EXITING PATROL");
-    return null;
-}
+    public override Type StateExit()
+    {
+        Debug.Log("EXITING PATROL");
+        return null;
+    }
 }
