@@ -1,11 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+using UnityEngine.UIElements;
+using static UnityEngine.UI.Selectable;
 
 public class NC_ScavengeState_FSM : NC_BaseState_FSM
 {
-    private NC_SmartTank_FSM nC_SmartTank_FSM; 
+    private NC_SmartTank_FSM nC_SmartTank_FSM;
+    private int patrolIndex = 0;
+
+
 
     public NC_ScavengeState_FSM(NC_SmartTank_FSM tank)
     {
@@ -14,6 +19,7 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
 
     public override Type StateEnter()
     {
+        patrolIndex = 0;
         // makes sure tank starts moving normally, good practice for reducing bugs
         nC_SmartTank_FSM.TankGo();
 
@@ -22,75 +28,47 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
 
     public override Type StateUpdate()
     {
-        // if health is no longer low, return to Patrol
-        if (nC_SmartTank_FSM.TankCurrentHealth >= 30f)
+        //Current State   Transition Condition    Next State
+        //Scavange Enemy visible & Fuel > 45 & Health < 30 Retreat
+        //Scavange    Health & Fuel >= 50 & Ammo > 5  Patrol
+        if (nC_SmartTank_FSM.NCEnTank != null && nC_SmartTank_FSM.TankCurrentFuel > 45f && nC_SmartTank_FSM.TankCurrentHealth < 30f)
+        {
+            return typeof(NC_RetreatState_FSM);
+        }
+        else if (nC_SmartTank_FSM.TankCurrentHealth > 50f && nC_SmartTank_FSM.TankCurrentFuel > 50f && nC_SmartTank_FSM.TankCurrentAmmo > 5)
         {
             return typeof(NC_PatrolState_FSM);
         }
-
-        // scavenge logic
-        Dictionary<GameObject, float> visibleCons = nC_SmartTank_FSM.VisibleConsumables;
-
-        GameObject bestTarget = null;
-        float closestDist = Mathf.Infinity; // Finds closest consumable to pick up
-
-        // prioritises health then either fuel or ammo
-        foreach (var item in visibleCons)
-        {
-            GameObject cons = item.Key;
-
-            if (cons == null) continue; // skip consumable if no longer there
-
-            string tag = cons.tag; // checks the consumbable tag so we know to pick up health first
-
-            // priority is health
-            if (tag == "Health")
-            {
-                float dist = item.Value;
-                if (dist < closestDist) // checks if this health pickup is closer than the currently stored closest distance.
-                {
-                    closestDist = dist; // updates the closest distance to this new smaller value.
-                    bestTarget = cons; // saves this consumable as the current best target.
-                }
-            }
-        }
-
-        // if no health, then looks for fuel or ammo
-        if (bestTarget == null)
-        {
-            foreach (var item in visibleCons)
-            {
-                GameObject cons = item.Key;
-                if (cons == null) continue;
-
-                string tag = cons.tag;
-
-                if (tag == "Fuel" || tag == "Ammo")
-                {
-                    float dist = item.Value;
-                    if (dist < closestDist)
-                    {
-                        closestDist = dist;
-                        bestTarget = cons;
-                    }
-                }
-            }
-        }
-
-        // finds best consumable first
-        if (bestTarget != null)
-        {
-            nC_SmartTank_FSM.FollowPathToWorldPoint(bestTarget, 1f, nC_SmartTank_FSM.heuristicMode); // sends tank to bestTarget (best consumable) using heuristic mode. 1f = full speed. 
-            nC_SmartTank_FSM.TurretReset(); // prevents turret from moving when scavenging
-        }
         else
         {
-            // if no consumbales are found then wander until consumbale are found
-            nC_SmartTank_FSM.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSM.heuristicMode);
-            nC_SmartTank_FSM.TurretReset();
+            // Scavenge logic
+            if (nC_SmartTank_FSM.consumable != null)
+            {
+                nC_SmartTank_FSM.FollowPathToWorldPoint(nC_SmartTank_FSM.consumable, 1f, nC_SmartTank_FSM.heuristicMode);
+            }
+            else // moves around the map following a square pattern if no consumables are detected
+            {
+                // Define square patrol points
+                Vector3[] patrolPoints = new Vector3[]
+                {
+                    new Vector3(85, 0, 85),
+                    new Vector3(85, 0, -85),
+                    new Vector3(-85, 0, -85),
+                    new Vector3(-85, 0, 85)
+                };
+                // Move to the next patrol point
+                nC_SmartTank_FSM.MoveToPatrolPoint(patrolPoints[patrolIndex]);
+                // Check if the tank is close enough to the patrol point to switch to the next one
+                if (Vector3.Distance(nC_SmartTank_FSM.transform.position, patrolPoints[patrolIndex]) < 5f)
+                {
+                    patrolIndex = (patrolIndex + 1) % patrolPoints.Length; // Loop back to the first point
+                }
+
+
+            }
         }
 
-        return null; // stays in Scavenge state
+            return null; // stays in Scavenge state
     }
 
     public override Type StateExit()
