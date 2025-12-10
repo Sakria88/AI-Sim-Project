@@ -6,12 +6,11 @@ using System;
 public class NC_RetreatState_FSM: NC_BaseState_FSM
 {
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
-    private NC_SmartTank_FSM tank;
-    private NC_SmartTank_FSM NCEnTank;
+    private NC_SmartTank_FSM nC_SmartTank_FSM;
 
     public NC_RetreatState_FSM(NC_SmartTank_FSM NCTank)
     {
-        this.tank = NCTank;
+        this.nC_SmartTank_FSM = NCTank;
 
 
     }
@@ -55,9 +54,9 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
 
       */
 
-        if (tank.NCEnTank != null)
+        if (nC_SmartTank_FSM.NCEnTank != null)
         {
-            float Distance = Vector3.Distance(tank.transform.position, tank.NCEnTank.transform.position);
+            float Distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
 
             if (Distance <=52f) //If the distance between the tank and enemy is equal to and less than 52
             {
@@ -78,7 +77,7 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
 
    public void FindRetreat_Path()
     {
-        tank.FollowPathToRandomWorldPoint(1f, tank.heuristicMode);
+        nC_SmartTank_FSM.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSM.heuristicMode);
 
     }
 

@@ -13,13 +13,13 @@ using System;
 /// </summary>
 public class NC_PatrolState_FSM : NC_BaseState_FSM
 {
-    private NC_SmartTank_FSM tank;
+    private NC_SmartTank_FSM nC_SmartTank_FSM;
     private Vector3 patrolTarget;
     private float patrolRadius = 25f;
 
     public NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
     {
-        tank = tankRef;
+        nC_SmartTank_FSM = tankRef;
     }
 
     // -------------------------------------------------
@@ -41,17 +41,17 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
     //  -------------------------------------------------
     public override Type StateUpdate()
     {
-        if (tank.NCEnTank != null)
+        if (nC_SmartTank_FSM.NCEnTank != null)
         {
-            if (Vector3.Distance(tank.transform.position,
-                tank.NCEnTank.transform.position) < 52f) // If the target is within 3 units chase it
+            if (Vector3.Distance(nC_SmartTank_FSM.transform.position,
+                nC_SmartTank_FSM.NCEnTank.transform.position) < 52f) // If the target is within 3 units chase it
             {
                 return typeof(NC_PursueState_FSM);
             }
         }
         else // else continue roaming
         {
-            tank.RandomRoam();
+            nC_SmartTank_FSM.RandomRoam();
             return null;
         }
         return null;
@@ -96,7 +96,7 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
     {
         Vector3 randomDir = UnityEngine.Random.insideUnitSphere * patrolRadius;
         randomDir.y = 0;
-        patrolTarget = tank.transform.position + randomDir;
+        patrolTarget = nC_SmartTank_FSM.transform.position + randomDir;
     }
 
 
@@ -117,7 +117,7 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
     private void SelectEnemyTank()
     {
         // OPTION A + C — Choose nearest visible enemy from sensor dictionary
-        Dictionary<GameObject, float> visibleEnemies = tank.VisibleEnemyTanks;
+        Dictionary<GameObject, float> visibleEnemies = nC_SmartTank_FSM.VisibleEnemyTanks;
 
         if (visibleEnemies.Count > 0)
         {
@@ -133,12 +133,12 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
                 }
             }
 
-            tank.NCEnTank = closestEnemy;
+            nC_SmartTank_FSM.NCEnTank = closestEnemy;
             return;
         }
 
         // OPTION B — Use existing enemy stored in SmartTank
-        if (tank.NCEnTank != null)
+        if (nC_SmartTank_FSM.NCEnTank != null)
         {
             return;
         }

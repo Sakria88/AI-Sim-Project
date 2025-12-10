@@ -9,12 +9,11 @@ public class NC_PursueState_FSM : NC_BaseState_FSM
 
 
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
-    private NC_SmartTank_FSM tank;
-    private NC_SmartTank_FSM NCEnTank;
+    private NC_SmartTank_FSM nC_SmartTank_FSM;
 
     public NC_PursueState_FSM(NC_SmartTank_FSM NCTank)
     {
-        this.tank = NCTank;
+        this.nC_SmartTank_FSM = NCTank;
       
     
     }
@@ -35,10 +34,10 @@ public class NC_PursueState_FSM : NC_BaseState_FSM
         //if ( VisibleEnemyTank.First().key != null)
         
            // tank.NCEnTank = VisibleEnemyTank.First().key;
-            if(tank.NCEnTank != null) //If enemy tank is there
+            if(nC_SmartTank_FSM.NCEnTank != null) //If enemy tank is there
             {
             //Store the distance between the tank and enemy tank as a varible
-            float Distance = Vector3.Distance(tank.transform.position, tank.NCEnTank.transform.position);
+            float Distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
                
                 if (Distance < 30f) //If the distance between the tank and enemy is less than 30
                 {
@@ -59,7 +58,7 @@ public class NC_PursueState_FSM : NC_BaseState_FSM
 
     public void PursueEnemy()//function to keep pursing
     {
-        tank.FollowPathToWorldPoint(tank.NCEnTank, 1f, tank.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
+        nC_SmartTank_FSM.FollowPathToWorldPoint(nC_SmartTank_FSM.NCEnTank, 1f, nC_SmartTank_FSM.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
     }
 
     public override Type StateExit()

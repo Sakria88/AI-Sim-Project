@@ -5,17 +5,17 @@ using System;
 
 public class NC_ScavengeState_FSM : NC_BaseState_FSM
 {
-    private NC_SmartTank_FSM tank; 
+    private NC_SmartTank_FSM nC_SmartTank_FSM; 
 
     public NC_ScavengeState_FSM(NC_SmartTank_FSM tank)
     {
-        this.tank = tank;
+        this.nC_SmartTank_FSM = tank;
     }
 
     public override Type StateEnter()
     {
         // makes sure tank starts moving normally, good practice for reducing bugs
-        tank.TankGo();
+        nC_SmartTank_FSM.TankGo();
 
         return null;
     }
@@ -23,13 +23,13 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
     public override Type StateUpdate()
     {
         // if health is no longer low, return to Patrol
-        if (tank.TankCurrentHealth >= 30f)
+        if (nC_SmartTank_FSM.TankCurrentHealth >= 30f)
         {
             return typeof(NC_PatrolState_FSM);
         }
 
         // scavenge logic
-        Dictionary<GameObject, float> visibleCons = tank.VisibleConsumables;
+        Dictionary<GameObject, float> visibleCons = nC_SmartTank_FSM.VisibleConsumables;
 
         GameObject bestTarget = null;
         float closestDist = Mathf.Infinity; // Finds closest consumable to pick up
@@ -80,14 +80,14 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
         // finds best consumable first
         if (bestTarget != null)
         {
-            tank.FollowPathToWorldPoint(bestTarget, 1f, tank.heuristicMode); // sends tank to bestTarget (best consumable) using heuristic mode. 1f = full speed. 
-            tank.TurretReset(); // prevents turret from moving when scavenging
+            nC_SmartTank_FSM.FollowPathToWorldPoint(bestTarget, 1f, nC_SmartTank_FSM.heuristicMode); // sends tank to bestTarget (best consumable) using heuristic mode. 1f = full speed. 
+            nC_SmartTank_FSM.TurretReset(); // prevents turret from moving when scavenging
         }
         else
         {
             // if no consumbales are found then wander until consumbale are found
-            tank.FollowPathToRandomWorldPoint(1f, tank.heuristicMode);
-            tank.TurretReset();
+            nC_SmartTank_FSM.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSM.heuristicMode);
+            nC_SmartTank_FSM.TurretReset();
         }
 
         return null; // stays in Scavenge state
@@ -96,8 +96,8 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
     public override Type StateExit()
     {
         // reset turret and allow tank to move normally again, prevents bugs for next state
-        tank.TurretReset();
-        tank.TankGo();
+        nC_SmartTank_FSM.TurretReset();
+        nC_SmartTank_FSM.TankGo();
         return null;
     }
 }

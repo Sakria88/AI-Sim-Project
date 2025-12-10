@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class NC_BaseAttackState_FSM : NC_BaseState_FSM
 {
-    private NC_SmartTank_FSM tank;
+    private NC_SmartTank_FSM nC_SmartTank_FSM;
 
     //use this timer to control burst firing intervals
     private float fireTimer;
@@ -16,7 +16,7 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
 
     public NC_BaseAttackState_FSM(NC_SmartTank_FSM tankRef)
     {
-        tank = tankRef;
+        nC_SmartTank_FSM = tankRef;
     }
 
     public override Type StateEnter()
@@ -29,7 +29,7 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
     public override Type StateUpdate()
     {
         // if tank loses the enemy base reference switch to BaseDefend so not idle
-        if (tank.NCEnBase == null)
+        if (nC_SmartTank_FSM.NCEnBase == null)
         {
             Debug.Log("Enemy base lost → switching to BaseDefend");
             return typeof(NC_BaseDefendState_FSM);
@@ -37,8 +37,8 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
 
         // measure distance to the target base
         float distanceToBase = Vector3.Distance(
-            tank.transform.position,
-            tank.NCEnBase.transform.position
+            nC_SmartTank_FSM.transform.position,
+            nC_SmartTank_FSM.NCEnBase.transform.position
         );
 
         // ------------------------------------------------------
@@ -47,14 +47,14 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
         if (distanceToBase > preferredAttackDistance)
         {
             //move toward the base using the pathing function exists in SmartTank
-            tank.FollowPathToWorldPoint(tank.NCEnBase, 1f, tank.heuristicMode);
+            nC_SmartTank_FSM.FollowPathToWorldPoint(nC_SmartTank_FSM.NCEnBase, 1f, nC_SmartTank_FSM.heuristicMode);
         }
 
         // ------------------------------------------------------
         // TURRET CONTROL
         // ------------------------------------------------------
         //face the turret directly toward the base target
-        tank.TurretFaceWorldPoint(tank.NCEnBase);
+        nC_SmartTank_FSM.TurretFaceWorldPoint(nC_SmartTank_FSM.NCEnBase);
 
         // ------------------------------------------------------
         // FIRING LOGIC
@@ -64,7 +64,7 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
         if (distanceToBase <= preferredAttackDistance)
         {
             // use the firing function that  in  SmartTank
-            tank.TurretFireAtPoint(tank.NCEnBase);
+            nC_SmartTank_FSM.TurretFireAtPoint(nC_SmartTank_FSM.NCEnBase);
         }
 
         // once tank timed burst is over switch to BaseDefend
@@ -76,7 +76,7 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
         // ------------------------------------------------------
         // HEALTH CHECK SAFETY
         // ------------------------------------------------------
-        if (tank.TankCurrentHealth <= 12f)
+        if (nC_SmartTank_FSM.TankCurrentHealth <= 12f)
         {
             Debug.Log("Health low → Retreat");
             return typeof(NC_RetreatState_FSM);
