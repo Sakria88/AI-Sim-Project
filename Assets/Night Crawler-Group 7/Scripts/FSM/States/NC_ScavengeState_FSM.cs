@@ -52,10 +52,10 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
                 // Define square patrol points
                 Vector3[] patrolPoints = new Vector3[]
                 {
-                    new Vector3(85, 0, 85),
-                    new Vector3(85, 0, -85),
-                    new Vector3(-85, 0, -85),
-                    new Vector3(-85, 0, 85)
+                    new Vector3(80, 0, 80),
+                    new Vector3(80, 0, -80),
+                    new Vector3(-80, 0, -80),
+                    new Vector3(-80, 0, 80)
                 };
                 // Move to the next patrol point
                 GameObject point = nC_SmartTank_FSM.CreateWorldPoint(patrolPoints[patrolIndex]);
