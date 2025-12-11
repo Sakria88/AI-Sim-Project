@@ -11,10 +11,10 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
     private float fireTimer;
     private float fireDuration = 1.2f;
 
-    // count how many shots I fire during this cycle
+    // count how many shots fired during this cycle
     private int shotsFired = 0;
 
-    // how close I should be before committing to firing
+    // how close tank should be before committing to firing
     private float preferredAttackDistance = 30f;
 
     public NC_BaseAttackState_FSM(NC_SmartTank_FSM tankRef)
@@ -26,7 +26,7 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
     {
         Debug.Log("ENTERING BASE ATTACK");
 
-        // reset timers and shot counter every time I enter base attack
+        // reset timers and shot counter every time tank enters base attack
         fireTimer = 0f;
         shotsFired = 0;
 
@@ -35,35 +35,35 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
 
     public override Type StateUpdate()
     {
-        // ==========================================================
-        // 0. BASE IS GONE → RETURN TO PATROL (search for next base)
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // BASE IS GONE → RETURN TO PATROL (search for next base)
+        // -----------------------------------------------------------------
         if (tank.NCEnBase == null)
         {
             Debug.Log("Base destroyed → returning to Patrol for next base");
             return typeof(NC_PatrolState_FSM);
         }
 
-        // ==========================================================
-        // 1. AMMO == 0 → SCAVENGE (FSM rule)
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // AMMO == 0 → SCAVENGE (FSM rule)
+        // -----------------------------------------------------------------
         if (tank.TankCurrentAmmo <= 0)
         {
             Debug.Log("Ammo depleted → Scavenge");
             return typeof(NC_ScavengeState_FSM);
         }
 
-        // ==========================================================
+        // -----------------------------------------------------------------
         // measure distance to enemy base
-        // ==========================================================
+        // -----------------------------------------------------------------
         float distanceToBase = Vector3.Distance(
             tank.transform.position,
             tank.NCEnBase.transform.position
         );
 
-        // ==========================================================
-        // 2. MOVE INTO RANGE
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // MOVE INTO RANGE
+        // -----------------------------------------------------------------
         if (distanceToBase > preferredAttackDistance)
         {
             tank.FollowPathToWorldPoint(
@@ -73,35 +73,35 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
             );
         }
 
-        // ==========================================================
-        // 3. TURRET CONTROL - always keep my aim locked on the base
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // TURRET CONTROL - always keep my aim locked on the base
+        // -----------------------------------------------------------------
         tank.TurretFaceWorldPoint(tank.NCEnBase);
 
-        // ==========================================================
-        // 4. FIRING LOGIC (burst-fire behaviour)
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // FIRING LOGIC (burst-fire behaviour)
+        // -----------------------------------------------------------------
         fireTimer += Time.deltaTime;
 
-        // I only fire when close enough to the base
+        // only fire when close enough to the base
         if (distanceToBase <= preferredAttackDistance)
         {
             tank.TurretFireAtPoint(tank.NCEnBase);
-            shotsFired++; // count each shot so I can follow FSM rules
+            shotsFired++; // count each shot so tank can follow FSM rules
         }
 
-        // ==========================================================
-        // 5. NEW FSM RULE → SHOTS FIRED == 3 → PATROL
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // NEW FSM RULE → SHOTS FIRED == 3 → PATROL
+        // -----------------------------------------------------------------
         if (shotsFired >= 3)
         {
             Debug.Log("Fired 3 shots → returning to Patrol");
             return typeof(NC_PatrolState_FSM);
         }
 
-        // ==========================================================
-        // 6. BURST FINISHED → BASE DEFEND (original behaviour)
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // BURST FINISHED → BASE DEFEND (original behaviour)
+        // -----------------------------------------------------------------
         if (fireTimer >= fireDuration)
         {
             Debug.Log("Burst complete → switching to BaseDefend");
@@ -110,9 +110,9 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
 
         }
 
-        // ==========================================================
-        // 7. SAFETY → LOW HEALTH → RETREAT
-        // ==========================================================
+        // -----------------------------------------------------------------
+        // SAFETY → LOW HEALTH → RETREAT
+        // -----------------------------------------------------------------
         if (tank.TankCurrentHealth <= 12f)
         {
             Debug.Log("Health low → Retreat");
