@@ -6,7 +6,6 @@ using System;
 
 public class Rule
 {
-
     //Antecedents are facts for the rules to check
     public string antecedentA;
     public string antecedentB;
@@ -18,7 +17,6 @@ public class Rule
     public Predicate compare;
     public enum Predicate
     { And, Or, nAnd}
-
 
     //The constructor sets how the rule needs to be written
     public Rule(string antecedentA, string antecedentB, Type consequentState, Predicate compare)

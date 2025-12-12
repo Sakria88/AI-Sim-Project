@@ -7,14 +7,11 @@ public class Rules
 {
     //This class that adds the Rules into a list
 
-    public void AddRule(Rules rule)
+    public void AddRule(Rule rule)
     {
 
         GetRules.Add(rule);
     }
 
     public List<Rule> GetRules { get; } = new List<Rule>();
-
-
-
 }
