@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class NC_RetreatState_FSM: NC_BaseState_FSM
+public class NC_RetreatState_FSMRBS: NC_BaseState_FSMRBS
 {
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
-    private NC_SmartTank_FSM nC_SmartTank_FSM;
+    private NC_SmartTank_FSMRBS nC_SmartTank_FSM;
     private GameObject retreatPoint;
 
-    public NC_RetreatState_FSM(NC_SmartTank_FSM NCTank)
+    public NC_RetreatState_FSMRBS(NC_SmartTank_FSMRBS NCTank)
     {
         this.nC_SmartTank_FSM = NCTank;
     }

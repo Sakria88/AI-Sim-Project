@@ -6,7 +6,7 @@ using System.Xml;
 using UnityEngine;
 using static AStar;
 
-public class NC_SmartTank_FSM : AITank
+public class NC_SmartTank_FSMRBS: AITank
 {
     public GameObject NCEnTank;        /*!< <c>enemyTank</c> stores a reference to a target enemy tank. 
                                         * This should be taken from <c>enemyTanksFound</c>, only whilst within the tank sensor. 
@@ -32,17 +32,16 @@ public class NC_SmartTank_FSM : AITank
 
     private void InitializeStateMachine()
     {
-        Dictionary<Type, NC_BaseState_FSM> states = new Dictionary<Type, NC_BaseState_FSM>();
+        Dictionary<Type, NC_BaseState_FSMRBS> states = new Dictionary<Type, NC_BaseState_FSMRBS>();
 
-        states.Add(typeof(NC_PatrolState_FSM), new NC_PatrolState_FSM(this));
-        states.Add(typeof(NC_PursueState_FSM), new NC_PursueState_FSM(this));
-        states.Add(typeof(NC_AttackState_FSM), new NC_AttackState_FSM(this));
-        states.Add(typeof(NC_RetreatState_FSM), new NC_RetreatState_FSM(this));
-        states.Add(typeof(NC_ScavengeState_FSM), new NC_ScavengeState_FSM(this));
-        states.Add(typeof(NC_BaseAttackState_FSM), new NC_BaseAttackState_FSM(this));
-        states.Add(typeof(NC_BaseDefendState_FSM), new NC_BaseDefendState_FSM(this));
+        states.Add(typeof(NC_PatrolState_FSMRBS), new NC_PatrolState_FSMRBS(this));
+        states.Add(typeof(NC_PursueState_FSMRBS), new NC_PursueState_FSMRBS(this));
+        states.Add(typeof(NC_AttackState_FSMRBS), new NC_AttackState_FSMRBS(this));
+        states.Add(typeof(NC_RetreatState_FSMRBS), new NC_RetreatState_FSMRBS(this));
+        states.Add(typeof(NC_ScavengeState_FSMRBS), new NC_ScavengeState_FSMRBS(this));
+        states.Add(typeof(NC_BaseAttackState_FSMRBS), new NC_BaseAttackState_FSMRBS(this));
 
-        GetComponent<NC_StateMachine_FSM>().SetStates(states);
+        GetComponent<NC_StateMachine_FSMRBS>().SetStates(states);
     }
 
     // Definition of behaviour of the different states

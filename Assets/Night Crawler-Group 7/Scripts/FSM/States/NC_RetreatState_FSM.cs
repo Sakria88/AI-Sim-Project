@@ -9,7 +9,8 @@ public class NC_RetreatState_FSM: NC_BaseState_FSM
     private NC_SmartTank_FSM nC_SmartTank_FSM;
     private GameObject retreatPoint;
 
-    public NC_RetreatState_FSM(NC_SmartTank_FSM NCTank)
+    public 
+        NC_RetreatState_FSM(NC_SmartTank_FSM NCTank)
     {
         this.nC_SmartTank_FSM = NCTank;
     }

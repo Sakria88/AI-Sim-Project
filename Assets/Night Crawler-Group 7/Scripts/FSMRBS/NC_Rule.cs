@@ -27,7 +27,7 @@ public class Rule
         this.antecedentA = antecedentA;
         this.antecedentB = antecedentB;
         this.consequentState = consequentState;
-        this.compare
+        this.compare = compare;
     }
 
     public Type CheckRule(Dictionary<string, bool> stats)

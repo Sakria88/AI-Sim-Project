@@ -12,7 +12,8 @@ public class NC_ScavengeState_FSM : NC_BaseState_FSM
 
 
 
-    public NC_ScavengeState_FSM(NC_SmartTank_FSM tank)
+    public 
+        NC_ScavengeState_FSM(NC_SmartTank_FSM tank)
     {
         this.nC_SmartTank_FSM = tank;
     }

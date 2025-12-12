@@ -7,7 +7,8 @@ public class NC_BaseDefendState_FSM: NC_BaseState_FSM
 {
     private NC_SmartTank_FSM nC_SmartTank_FSM;
 
-    public NC_BaseDefendState_FSM(NC_SmartTank_FSM nC_SmartTank_FSM)
+    public 
+        NC_BaseDefendState_FSM(NC_SmartTank_FSM nC_SmartTank_FSM)
     {
         this.nC_SmartTank_FSM = nC_SmartTank_FSM;
     }

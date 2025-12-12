@@ -5,14 +5,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.UI.Selectable;
 
-public class NC_ScavengeState_FSM : NC_BaseState_FSM
+public class NC_ScavengeState_FSMRBS : NC_BaseState_FSMRBS
 {
-    private NC_SmartTank_FSM nC_SmartTank_FSM;
+    private NC_SmartTank_FSMRBS nC_SmartTank_FSM;
     private int patrolIndex = 0;
 
-
-
-    public NC_ScavengeState_FSM(NC_SmartTank_FSM tank)
+    public NC_ScavengeState_FSMRBS(NC_SmartTank_FSMRBS tank)
     {
         this.nC_SmartTank_FSM = tank;
     }

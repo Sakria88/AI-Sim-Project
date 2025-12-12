@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NC_BaseAttackState_FSM : NC_BaseState_FSM
+public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
 {
-    private NC_SmartTank_FSM tank;
+    private NC_SmartTank_FSMRBS tank;
 
     // firing control
     private float fireTimer;
@@ -17,7 +17,7 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
     // how close tank should be before committing to firing
     private float preferredAttackDistance = 30f;
 
-    public NC_BaseAttackState_FSM(NC_SmartTank_FSM tankRef)
+    public NC_BaseAttackState_FSMRBS(NC_SmartTank_FSMRBS tankRef)
     {
         tank = tankRef;
     }

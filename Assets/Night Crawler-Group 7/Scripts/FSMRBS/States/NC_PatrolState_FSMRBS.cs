@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class NC_PatrolState_FSM : NC_BaseState_FSM
+public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
 {
-    private NC_SmartTank_FSM tank;
+    private NC_SmartTank_FSMRBS tank;
     private float exploreTimer = 0f;
     private float exploreInterval = 2.5f;
 
-    public NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
+    public NC_PatrolState_FSMRBS(NC_SmartTank_FSMRBS tankRef)
     {
         tank = tankRef;
     }

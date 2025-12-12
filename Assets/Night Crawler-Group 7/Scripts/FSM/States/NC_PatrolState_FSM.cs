@@ -9,7 +9,8 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
     private float exploreTimer = 0f;
     private float exploreInterval = 2.5f;
 
-    public NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
+    public 
+        NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
     {
         tank = tankRef;
     }

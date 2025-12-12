@@ -17,7 +17,8 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
     // how close tank should be before committing to firing
     private float preferredAttackDistance = 30f;
 
-    public NC_BaseAttackState_FSM(NC_SmartTank_FSM tankRef)
+    public 
+        NC_BaseAttackState_FSM(NC_SmartTank_FSM tankRef)
     {
         tank = tankRef;
     }

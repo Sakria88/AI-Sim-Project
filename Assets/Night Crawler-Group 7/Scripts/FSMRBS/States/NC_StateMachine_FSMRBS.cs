@@ -9,16 +9,16 @@ using System;
 /// state initialization, execution, and transitions. Designed to be reusable
 /// across different entity types within Unity.
 /// </summary>
-public class NC_StateMachine_FSM : MonoBehaviour
+public class NC_StateMachine_FSMRBS : MonoBehaviour
 {
-    private Dictionary<Type, NC_BaseState_FSM> states; // Holds all possible states
-    public NC_BaseState_FSM currentState; // Holds the current state
+    private Dictionary<Type, NC_StateMachine_FSMRBS> states; // Holds all possible states
+    public NC_StateMachine_FSMRBS currentState; // Holds the current state
 
     /// <summary>
     /// Provides access to the currently active state.
     /// Setter is private to ensure controlled state transitions.
     /// </summary>
-    public NC_BaseState_FSM CurrentState
+    public NC_StateMachine_FSMRBS CurrentState
     {
         get
         {
@@ -34,7 +34,7 @@ public class NC_StateMachine_FSM : MonoBehaviour
     /// Injects the available states into the FSM.
     /// Must be called before the state machine begins operating.
     /// </summary>
-    public void SetStates(Dictionary<Type, NC_BaseState_FSM> states)
+    public void SetStates(Dictionary<Type, NC_StateMachine_FSMRBS> states)
     {
         this.states = states; // Assign the provided states dictionary to the class member
     }
