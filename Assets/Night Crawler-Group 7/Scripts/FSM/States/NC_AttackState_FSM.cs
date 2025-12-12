@@ -6,12 +6,14 @@ using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.UI.Selectable;
 
+/// <summary>
+/// This class defines the Attack state for the Night Crawler tank's finite state machine (FSM).
+/// </summary>
 public class NC_AttackState_FSM : NC_BaseState_FSM
 {
     private NC_SmartTank_FSM nC_SmartTank_FSM;
 
-    public 
-        NC_AttackState_FSM(NC_SmartTank_FSM nC_SmartTank_FSM)
+    public NC_AttackState_FSM(NC_SmartTank_FSM nC_SmartTank_FSM)
     {
         this.nC_SmartTank_FSM = nC_SmartTank_FSM;
     }
@@ -24,24 +26,32 @@ public class NC_AttackState_FSM : NC_BaseState_FSM
 
     public override Type StateUpdate()
     {
+        /* 
+         * State Transition Logic:
+         * - If health is low (<35), transition to Retreat state.
+         * - If fuel is low (<35) or ammo is depleted (0), transition to Scavenge state.
+         * - If the enemy tank is out of range (>30), transition to Pursue state.
+         * - If no enemy tank is detected, transition to Patrol state.
+         * - Otherwise, continue attacking the enemy tank.
+         */
+
         if (nC_SmartTank_FSM.TankCurrentHealth < 35f)
         {
-            return typeof(NC_RetreatState_FSM);
+            return typeof(NC_RetreatState_FSM); // Switch to Retreat state
         }
         else if (nC_SmartTank_FSM.TankCurrentFuel < 35f || nC_SmartTank_FSM.TankCurrentAmmo == 0)
         {
-            return typeof(NC_ScavengeState_FSM);
+            return typeof(NC_ScavengeState_FSM); // Switch to Scavenge state
         }
         else if (nC_SmartTank_FSM.NCEnTank != null)
         {
             float distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
             if (distance > 30f)
             {
-                return typeof(NC_PursueState_FSM);
+                return typeof(NC_PursueState_FSM); // Switch to Pursue state
             }
             else
             {
-                // Attack logic
                 nC_SmartTank_FSM.TurretFireAtPoint(nC_SmartTank_FSM.NCEnTank);
             }
         }

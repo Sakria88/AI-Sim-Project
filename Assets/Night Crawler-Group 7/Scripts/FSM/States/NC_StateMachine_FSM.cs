@@ -11,8 +11,15 @@ using System;
 /// </summary>
 public class NC_StateMachine_FSM : MonoBehaviour
 {
-    private Dictionary<Type, NC_BaseState_FSM> states; // Holds all possible states
-    public NC_BaseState_FSM currentState; // Holds the current state
+    /// <summary>
+    /// Holds all possible states for the FSM, mapped by their Type.
+    /// </summary>
+    private Dictionary<Type, NC_BaseState_FSM> states;
+
+    /// <summary>
+    /// Holds the current state of the FSM.
+    /// </summary>
+    public NC_BaseState_FSM currentState;
 
     /// <summary>
     /// Provides access to the currently active state.

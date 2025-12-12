@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// This class defines the Patrol state for the Night Crawler tank's finite state machine (FSM).
+/// </summary>
 public class NC_PatrolState_FSM : NC_BaseState_FSM
 {
     private NC_SmartTank_FSM tank;
     private float exploreTimer = 0f;
     private float exploreInterval = 2.5f;
 
-    public 
-        NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
+    public NC_PatrolState_FSM(NC_SmartTank_FSM tankRef)
     {
         tank = tankRef;
     }
@@ -38,25 +40,24 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
         // CONSUMABLE WITHIN 52 → SCAVENGE
         // ------------------------------------------------
         if (tank.VisibleEnemyTanks.Count > 0)
-       {
-        float closestTankDist = float.MaxValue;
-        GameObject closestTank = null;
+        {
+            float closestTankDist = float.MaxValue;
+            GameObject closestTank = null;
 
-        foreach (var entry in tank.VisibleEnemyTanks)
-         {
-          if (entry.Value < closestTankDist)
-          {
-            closestTankDist = entry.Value;
-            closestTank = entry.Key;
-          }
-       }
-
-    if (closestTankDist < 52f)
-    {
-        tank.NCEnTank = closestTank;
-        return typeof(NC_PursueState_FSM);
-    }
-  }
+            foreach (var entry in tank.VisibleEnemyTanks)
+            {
+                if (entry.Value < closestTankDist)
+                {
+                    closestTankDist = entry.Value;
+                    closestTank = entry.Key;
+                }
+            }
+            if (closestTankDist < 52f)
+            {
+                tank.NCEnTank = closestTank;
+                return typeof(NC_PursueState_FSM);
+            }
+        }
 
         // ------------------------------------------------
         // ENEMY BASE WITHIN 52 → BASE ATTACK

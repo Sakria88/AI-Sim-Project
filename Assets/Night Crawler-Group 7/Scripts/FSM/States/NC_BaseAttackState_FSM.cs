@@ -3,11 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class defines the Base Attack state for the Night Crawler tank's finite state machine (FSM).
+/// </summary>
 public class NC_BaseAttackState_FSM : NC_BaseState_FSM
 {
     private NC_SmartTank_FSM tank;
 
-    // firing control
+    // firing control variables
     private float fireTimer;
     private float fireDuration = 1.2f;
 
@@ -17,8 +20,7 @@ public class NC_BaseAttackState_FSM : NC_BaseState_FSM
     // how close tank should be before committing to firing
     private float preferredAttackDistance = 30f;
 
-    public 
-        NC_BaseAttackState_FSM(NC_SmartTank_FSM tankRef)
+    public NC_BaseAttackState_FSM(NC_SmartTank_FSM tankRef)
     {
         tank = tankRef;
     }

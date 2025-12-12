@@ -6,6 +6,9 @@ using System.Xml;
 using UnityEngine;
 using static AStar;
 
+/// <summary>
+/// This class defines the Smart Tank AI using a Finite State Machine (FSM) approach.
+/// </summary>
 public class NC_SmartTank_FSM : AITank
 {
     public GameObject NCEnTank;        /*!< <c>enemyTank</c> stores a reference to a target enemy tank. 
@@ -43,38 +46,6 @@ public class NC_SmartTank_FSM : AITank
         states.Add(typeof(NC_BaseDefendState_FSM), new NC_BaseDefendState_FSM(this));
 
         GetComponent<NC_StateMachine_FSM>().SetStates(states);
-    }
-
-    // Definition of behaviour of the different states
-    public void DefendAllyBase()
-    {
-        myBase = MyBases[0];
-
-        if (myBase != null)
-        {
-            //go close to it and make a defensive perimeter searching for enemies
-            if (Vector3.Distance(transform.position, myBase.transform.position) < 25f)
-            {
-                // Reorient tank to face outwards from base using TurretFaceWorldPoint
-                Vector3 directionFromBase = transform.position - myBase.transform.position;
-                GameObject pointToFace = new GameObject();
-                pointToFace.transform.position = transform.position + directionFromBase.normalized * 10f;
-                TurretFaceWorldPoint(pointToFace);
-
-
-            }
-            else
-            {
-                FollowPathToWorldPoint(myBase, 1f, heuristicMode);
-            }
-
-        }
-
-    }
-    // Start is called before the first frame update
-    public void RandomRoam()
-    {
-        FollowPathToRandomWorldPoint(1f, heuristicMode);
     }
 
    // Start is called before the first frame update

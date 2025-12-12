@@ -4,14 +4,20 @@ using UnityEngine;
 using System;
 
 
-//This base class is for setting the structure for the state classes 
+/// <summary>
+/// Abstract base class for defining states in a Finite State Machine (FSM).
+/// </summary>
 public abstract class NC_BaseState_FSM
 {
-    //each state will have these 3 functions and because they will follow the same structure the state machine will be able to talk to all the states 
-    // and switch between them eassily.
+    /*  each state will have these 3 functions and because 
+     *  they will follow the same structure the state machine 
+     *  will be able to talk to all the states 
+     *  and switch between them eassily.
+     */
+
 
     /// <summary>
-    /// What a state will do when they enter
+    /// What the state will do on entry
     /// </summary>
     public abstract Type StateEnter();
 
@@ -24,6 +30,4 @@ public abstract class NC_BaseState_FSM
     /// What a state will do when they leave
     /// </summary>
     public abstract Type StateExit();
-
-
 }

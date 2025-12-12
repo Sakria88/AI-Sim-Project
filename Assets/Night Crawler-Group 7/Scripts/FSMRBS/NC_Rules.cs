@@ -9,7 +9,6 @@ public class Rules
 
     public void AddRule(Rule rule)
     {
-
         GetRules.Add(rule);
     }
 
