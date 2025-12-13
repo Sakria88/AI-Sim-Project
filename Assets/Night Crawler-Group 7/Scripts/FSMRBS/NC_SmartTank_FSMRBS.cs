@@ -66,9 +66,9 @@ public class NC_SmartTank_FSMRBS : AITank
     /// </summary>
     public void InitiliseRules()
     {
-        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.nAnd));
         rules.AddRule(new Rule("NC_PursueState_FSMRBS", "targetReached", "targetSpotted", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
-        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.nAnd));
         // Enemy base detected AND no enemy tank → BaseAttack
         rules.AddRule(new Rule("NC_PatrolState_FMSRBS", "enemyBaseDetected","enemyInSight",typeof(NC_BaseAttackState_FSMRBS),Rule.Predicate.nAnd));
         // Enemy in far range → Pursue
@@ -139,6 +139,7 @@ public class NC_SmartTank_FSMRBS : AITank
         stats.Add("enemyInSight", false);
         stats.Add("enemyDetected", false);
         stats.Add("enemyFiring", false);
+        stats.Add("targetSpotted", false);
 
         stats.Add("lowHealth", false);
         stats.Add("lowFuel", false);
@@ -157,6 +158,8 @@ public class NC_SmartTank_FSMRBS : AITank
 
         stats.Add("waitTimerExceeded", false);
         stats.Add("safeZoneReached", false);
+        
+
 
 
         // State tracking stats
@@ -557,20 +560,24 @@ public class NC_SmartTank_FSMRBS : AITank
     /// <summary>
     /// Checks if the target has been spotted.
     /// </summary>
-    public void CheckTargetSpotted() //Function in smart tank for checking if the target is there 
+    public void CheckTargetSpotted()
     {
-        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        var tank = GetComponent<NC_SmartTank_FSMRBS>();
 
-        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 50f)
-        {
-            stats["targetSpotted"] = true;
-        }
-
-        if (nC_SmartTank_FSMRBS.NCEnTank == null)
+        if (tank.NCEnTank == null)
         {
             stats["targetSpotted"] = false;
+            return;
         }
+
+        float distance = Vector3.Distance(
+            tank.transform.position,
+            tank.NCEnTank.transform.position
+        );
+
+        stats["targetSpotted"] = distance < 50f;
     }
+
 
     public override void AIOnCollisionEnter(Collision collision)
     {
