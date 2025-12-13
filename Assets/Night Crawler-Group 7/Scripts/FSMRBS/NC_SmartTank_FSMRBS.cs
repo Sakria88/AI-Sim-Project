@@ -70,6 +70,33 @@ public class NC_SmartTank_FSMRBS : AITank
         rules.AddRule(new Rule("NC_PursueState_FSMRBS", "targetReached", "targetSpotted", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
 
+        // SCAVENGE RULES (RESOURCE BASED)
+
+        // lowHealth OR lowFuel returns scavenge
+        rules.AddRule(new Rule(
+            "lowHealth",
+            "lowFuel",
+            "NC_ScavengeState_FSMRBS",
+            typeof(NC_ScavengeState_FSMRBS),
+            Rule.Predicate.Or));
+
+        // lowAmmo OR lowFuel returns scavenge
+        rules.AddRule(new Rule(
+            "lowAmmo",
+            "lowFuel",
+            "NC_ScavengeState_FSMRBS",
+            typeof(NC_ScavengeState_FSMRBS),
+            Rule.Predicate.Or));
+
+        // safeZoneReached AND resourcesLow returns scavenge
+        rules.AddRule(new Rule(
+            "safeZoneReached",
+            "resourcesLow",
+            "NC_ScavengeState_FSMRBS",
+            typeof(NC_ScavengeState_FSMRBS),
+            Rule.Predicate.And));
+
+
     }
 
     /// <summary>
