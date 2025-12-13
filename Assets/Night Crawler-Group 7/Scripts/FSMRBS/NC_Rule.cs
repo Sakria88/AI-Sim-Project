@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-
+/// <summary>
+/// Class <c>Rule</c> is used to create rules for the FSM to follow
+/// </summary>
 public class Rule
 {
     //Antecedents are facts for the rules to check
@@ -30,6 +32,11 @@ public class Rule
         this.compare = compare;
     }
 
+    /// <summary>
+    /// Checks the rule against the stats provided 
+    /// </summary>
+    /// <param name="stats"></param>
+    /// <returns></returns>
     public Type CheckRule(Dictionary<string, bool> stats)
     {
         //setting the string varibles to booleans for the statement
