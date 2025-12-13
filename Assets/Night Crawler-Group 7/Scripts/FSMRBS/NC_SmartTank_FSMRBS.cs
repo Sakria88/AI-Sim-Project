@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,18 @@ public class NC_SmartTank_FSMRBS : AITank
     public Dictionary<string, bool> stats = new Dictionary<string, bool>();
     public Rules rules = new Rules();
 
+    // Enemy fire detection
+    private float lastHealth;
+    private float healthSampleTimer = 0f;
 
+    private Queue<float> recentDamage = new Queue<float>();
+    private const int DAMAGE_SAMPLE_WINDOW = 15;   // últimos 15 segundos
+    private const float DAMAGE_THRESHOLD = 15f;    // daño de 1 disparo
+
+
+    /// <summary>
+    /// Initialises finite state machine, setting the states.
+    /// </summary>
     private void InitializeStateMachine()
     {
         Dictionary<Type, NC_BaseState_FSMRBS> states = new Dictionary<Type, NC_BaseState_FSMRBS>();
@@ -50,44 +61,68 @@ public class NC_SmartTank_FSMRBS : AITank
         GetComponent<NC_StateMachine_FSMRBS>().SetStates(states);
     }
 
-    // Definition of behaviour of the different states
-    public void DefendAllyBase()
+    /// <summary>
+    /// Initialises the rules for the FSM-RBS.
+    /// </summary>
+    public void InitiliseRules()
     {
-        myBase = MyBases[0];
-
-        if (myBase != null)
-        {
-            //go close to it and make a defensive perimeter searching for enemies
-            if (Vector3.Distance(transform.position, myBase.transform.position) < 25f)
-            {
-                // Reorient tank to face outwards from base using TurretFaceWorldPoint
-                Vector3 directionFromBase = transform.position - myBase.transform.position;
-                GameObject pointToFace = new GameObject();
-                pointToFace.transform.position = transform.position + directionFromBase.normalized * 10f;
-                TurretFaceWorldPoint(pointToFace);
-
-
-            }
-            else
-            {
-                FollowPathToWorldPoint(myBase, 1f, heuristicMode);
-            }
-
-        }
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "targetReached", "targetSpotted", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
 
     }
-    // Start is called before the first frame update
-    public void RandomRoam()
+
+    /// <summary>
+    /// Initialises the stats for the FSM-RBS.
+    /// </summary>
+    public void InitiliseStats()
     {
-        FollowPathToRandomWorldPoint(1f, heuristicMode);
+        // Condition tracking stats
+        stats.Add("enemyBaseDetected", false);
+        stats.Add("enemyBaseDestroyed", false);
+        stats.Add("enemyInSight", false);
+        stats.Add("enemyDetected", false);
+        stats.Add("enemyFiring", false);
+
+        stats.Add("lowHealth", false);
+        stats.Add("lowFuel", false);
+        stats.Add("lowAmmo", false);
+        stats.Add("criticalHealth", false);
+        stats.Add("criticalFuel", false);
+        stats.Add("criticalAmmo", false);
+        stats.Add("enoughHealth", false);
+        stats.Add("enoughFuel", false);
+        stats.Add("enoughAmmo", false);
+        stats.Add("shotsFired", false);
+
+        stats.Add("enemyDistanceClose", false);
+        stats.Add("enemyDistanceMid", false);
+        stats.Add("enemyDistanceFar", false);
+
+        stats.Add("waitTimerExceeded", false);
+        stats.Add("safeZoneReached", false);
+
+
+        // State tracking stats
+        stats.Add("NC_PatrolState_FSMRBS", false);
+        stats.Add("NC_PursueState_FSMRBS", false);
+        stats.Add("NC_AttackState_FSMRBS", false);
+        stats.Add("NC_RetreatState_FSMRBS", false);
+        stats.Add("NC_ScavengeState_FSMRBS", false);
+        stats.Add("NC_BaseAttackState_FSMRBS", false);
+
     }
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Initialises the AI Tank.
+    /// </summary>
     public override void AITankStart()
     {
         InitializeStateMachine();
         InitiliseStats();
         InitiliseRules();
+
+        lastHealth = TankCurrentHealth;
     }
 
     // Update is called once per frame
@@ -132,37 +167,99 @@ public class NC_SmartTank_FSMRBS : AITank
                 consumableFuel = entry.Key;
             }
         }
-
     }
 
-    public void InitiliseRules()
+    //-----------------------------------------
+    //  CHECKING RULE HELPERS
+    //-----------------------------------------
+
+    public void CheckEnemyBaseDetected()
     {
-        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
-        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "targetReached", "targetSpotted", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
-        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
-
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (nC_SmartTank_FSMRBS.NCEnBase != null)
+        {
+            stats["enemyBaseDetected"] = true;
+        }
+        else
+        {
+            stats["enemyBaseDetected"] = false;
+        }
     }
 
-    public void InitiliseStats()
+    public void CheckEnemyBaseDestroyed()
     {
-        stats.Add("lowHealth", false);
-
-        stats.Add("targetSpotted", false);
-
-        stats.Add("targetReached", false);
-
-        stats.Add("NC_PatrolState_FSMRBS", false);
-
-        stats.Add("NC_PursueState_FSMRBS", false);
-
-        stats.Add("NC_RetreatState_FSMRBS", false);
-
-        stats.Add("NC_AttackState_FSMRBS", false);
-
-
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (nC_SmartTank_FSMRBS.NCEnBase == null)
+        {
+            stats["enemyBaseDestroyed"] = true;
+        }
+        else
+        {
+            stats["enemyBaseDestroyed"] = false;
+        }
     }
 
-    public void checkLowHealth()
+    public void CheckEnemyInSight()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (nC_SmartTank_FSMRBS.NCEnTank != null)
+        {
+            stats["enemyInSight"] = true;
+        }
+        else
+        {
+            stats["enemyInSight"] = false;
+        }
+    }
+
+    public void CheckEnemyDetected()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (nC_SmartTank_FSMRBS.NCEnTank != null)
+        {
+            stats["enemyDetected"] = true;
+        }
+        else
+        {
+            stats["enemyDetected"] = false;
+        }
+    }
+
+    //TODO
+    public void CheckEnemyFiring()
+    {
+        healthSampleTimer += Time.deltaTime;
+
+        // Sample health once per second
+        if (healthSampleTimer < 1f)
+            return;
+
+        healthSampleTimer = 0f;
+
+        float currentHealth = TankCurrentHealth;
+        float damageTaken = Mathf.Max(0f, lastHealth - currentHealth);
+
+        lastHealth = currentHealth;
+
+        // Register recent damage
+        recentDamage.Enqueue(damageTaken);
+
+        if (recentDamage.Count > DAMAGE_SAMPLE_WINDOW)
+        {
+            recentDamage.Dequeue();
+        }
+
+        float totalRecentDamage = recentDamage.Sum();
+
+        // if damage in the last DAMAGE_SAMPLE_WINDOW seconds exceeds threshold, enemy is firing
+        stats["enemyFiring"] = totalRecentDamage >= DAMAGE_THRESHOLD;
+    }
+
+
+    /// <summary>
+    /// Checks if the tank has low health.
+    /// </summary>
+    public void CheckLowHealth()
     {
         var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
 
@@ -180,13 +277,16 @@ public class NC_SmartTank_FSMRBS : AITank
 
     }
 
-    public void checkLowFuel() 
+    /// <summary>
+    /// Checks if the tank has low fuel.
+    /// </summary>
+    public void CheckLowFuel() 
     {
         var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
 
         float Fuel = nc_smarttankRBSM.TankCurrentAmmo;
 
-        if (Fuel <= 30)
+        if (Fuel <= 35)
         {
             stats["lowFuel"] = true;
 
@@ -198,6 +298,190 @@ public class NC_SmartTank_FSMRBS : AITank
 
     }
 
+    public void CheckLowAmmo()
+    {
+        var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
+        float Ammo = nc_smarttankRBSM.TankCurrentAmmo;
+        if (Ammo <= 5)
+        {
+            stats["lowAmmo"] = true;
+        }
+        else
+        {
+            stats["lowAmmo"] = false;
+        }
+    }
+
+    public void CheckCriticalHealth()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float Health = nC_SmartTank_FSMRBS.TankCurrentHealth;
+        if (Health < 10)
+        {
+            stats["criticalHealth"] = true;
+        }
+        else
+        {
+            stats["criticalHealth"] = false;
+        }
+    }
+
+    public void CheckCriticalFuel()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float Fuel = nC_SmartTank_FSMRBS.TankCurrentFuel;
+        if (Fuel < 10)
+        {
+            stats["criticalFuel"] = true;
+        }
+        else
+        {
+            stats["criticalFuel"] = false;
+        }
+    }
+
+    public void CheckCriticalAmmo()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float Ammo = nC_SmartTank_FSMRBS.TankCurrentAmmo;
+        if (Ammo < 1)
+        {
+            stats["criticalAmmo"] = true;
+        }
+        else
+        {
+            stats["criticalAmmo"] = false;
+        }
+    }
+
+    public void CheckEnoughHealth()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float Health = nC_SmartTank_FSMRBS.TankCurrentHealth;
+        if (Health > 50)
+        {
+            stats["enoughHealth"] = true;
+        }
+        else
+        {
+            stats["enoughHealth"] = false;
+        }
+    }
+
+    public void CheckEnoughFuel()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float Fuel = nC_SmartTank_FSMRBS.TankCurrentFuel;
+        if (Fuel > 50)
+        {
+            stats["enoughFuel"] = true;
+        }
+        else
+        {
+            stats["enoughFuel"] = false;
+        }
+    }
+
+    public void CheckEnoughAmmo()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float Ammo = nC_SmartTank_FSMRBS.TankCurrentAmmo;
+        if (Ammo > 5)
+        {
+            stats["enoughAmmo"] = true;
+        }
+        else
+        {
+            stats["enoughAmmo"] = false;
+        }
+    }
+
+    //TODO
+    public void CheckShotsFired()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (nC_SmartTank_FSMRBS.TankIsFiring())
+        {
+            stats["shotsFired"] = true;
+        }
+        else
+        {
+            stats["shotsFired"] = false;
+        }
+    }
+
+    public void CheckEnemyDistanceClose()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f)
+        {
+            stats["enemyDistanceClose"] = true;
+        }
+        else
+        {
+            stats["enemyDistanceClose"] = false;
+        }
+    }
+
+    public void CheckEnemyDistanceMid()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
+        if (distance >= 25f && distance < 45f)
+        {
+            stats["enemyDistanceMid"] = true;
+        }
+        else
+        {
+            stats["enemyDistanceMid"] = false;
+        }
+    }
+
+    public void CheckEnemyDistanceFar()
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
+        if (distance >= 45f)
+        {
+            stats["enemyDistanceFar"] = true;
+        }
+        else
+        {
+            stats["enemyDistanceFar"] = false;
+        }
+    }
+
+    public void CheckWaitTimerExceeded(float waitTime)
+    {
+        t += Time.deltaTime;
+        if (t >= waitTime)
+        {
+            stats["waitTimerExceeded"] = true;
+            t = 0f; // Reset timer after exceeding
+        }
+        else
+        {
+            stats["waitTimerExceeded"] = false;
+        }
+    }
+
+    // TODO
+    public void CheckSafeZoneReached(Vector3 safeZonePosition, float threshold)
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, safeZonePosition) < threshold)
+        {
+            stats["safeZoneReached"] = true;
+        }
+        else
+        {
+            stats["safeZoneReached"] = false;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the target has been reached.
+    /// </summary>
     public void CheckTargetReached() //Function for checking if target is in  range
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -212,9 +496,11 @@ public class NC_SmartTank_FSMRBS : AITank
         {
             stats["targetReached"] = false;
         }
-
     }
 
+    /// <summary>
+    /// Checks if the target has been spotted.
+    /// </summary>
     public void CheckTargetSpotted() //Function in smart tank for checking if the target is there 
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -228,12 +514,11 @@ public class NC_SmartTank_FSMRBS : AITank
         {
             stats["targetSpotted"] = false;
         }
-
-
     }
+
     public override void AIOnCollisionEnter(Collision collision)
-   {
-   }
+    {
+    }
 
     public void GeneratePathToWorldPoint(GameObject pointInWorld)
     {
@@ -271,7 +556,7 @@ public class NC_SmartTank_FSMRBS : AITank
     //-----------------------------------------
     //generate a temporary world point to feed into A* pathfinding
 
-   public GameObject CreateWorldPoint(Vector3 position)
+    public GameObject CreateWorldPoint(Vector3 position)
     {
         GameObject point = new GameObject("WorldPoint");
         point.transform.position = position;
@@ -284,7 +569,8 @@ public class NC_SmartTank_FSMRBS : AITank
         GameObject point = CreateWorldPoint(targetPosition);
         FollowPathToWorldPoint(point, 1f, heuristicMode);
     }
-   // used by base attack state to push toward enemy base
+
+    // used by base attack state to push toward enemy base
     public void MoveTowardBase(GameObject targetBase, float speed)
     {
         if (targetBase == null)
@@ -293,10 +579,10 @@ public class NC_SmartTank_FSMRBS : AITank
         FollowPathToWorldPoint(targetBase, speed, heuristicMode);
     }
 
-/// ----------------------
-/// TANK CONTROL HELPERS
-/// ----------------------
-  public void TankStop()
+    /// ----------------------
+    /// TANK CONTROL HELPERS
+    /// ----------------------
+    public void TankStop()
     {
         a_StopTank();
     }
@@ -305,9 +591,9 @@ public class NC_SmartTank_FSMRBS : AITank
         a_StartTank();
     }
 
-///-------------------------
-///TURRET CONTROL
-///-------------------------
+    ///-------------------------
+    ///TURRET CONTROL
+    ///-------------------------
     public void TurretFaceWorldPoint(GameObject pointInWorld)
     {
         a_FaceTurretToPoint(pointInWorld);
@@ -330,9 +616,9 @@ public class NC_SmartTank_FSMRBS : AITank
         throw new NotImplementedException();
     }
 
-///-------------------------
-/// TANK STATUS PROPERTIES
-///-------------------------
+    ///-------------------------
+    /// TANK STATUS PROPERTIES
+    ///-------------------------
     public float TankCurrentHealth
     {
         get

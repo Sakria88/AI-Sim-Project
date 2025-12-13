@@ -63,7 +63,7 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
 
     public void PursueEnemy()//function to keep pursing
     {
-        nC_SmartTank_FSMRBS.checkLowHealth();
+        nC_SmartTank_FSMRBS.CheckLowHealth();
         nC_SmartTank_FSMRBS.CheckTargetReached();
         nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.NCEnTank, 1f, nC_SmartTank_FSMRBS.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
     }

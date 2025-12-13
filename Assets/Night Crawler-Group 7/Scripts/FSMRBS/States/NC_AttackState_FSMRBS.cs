@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Class <c>NC_AttackState_FSMRBS</c> inherits from <c>NC_BaseState_FSMRBS</c>, manages behaviour for StateEnter, StateUpdate and StateExit
+/// </summary>
 public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
 {
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
