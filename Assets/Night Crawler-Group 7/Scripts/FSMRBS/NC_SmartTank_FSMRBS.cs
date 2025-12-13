@@ -89,10 +89,16 @@ public class NC_SmartTank_FSMRBS : AITank
         rules.AddRule(new Rule("NC_Wait_FSMRBS", "waitTimerExceeded", "enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.nAnd));
         //Enemy tank appears within close range → Attack
         rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "enemyInSight", "enemyDistanceClose", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
+        //Ammo drops below safe threshold (≤3) → Scavenge
+        rules.AddRule(newRule("NC_BaseAttackState_FSMRBS", "criticalAmmo", "true", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
         //Health critical → Retreat
         rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "healthCritical", "true", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
         // Fired ≥ 3 shots AND enemy not visible → Patrol
         rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "shotsFiredEnough", "enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.nAnd));
+        // Base destroyed
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyBaseDestroyed", "true", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
+        // Enemy tank firing nearby enemy base
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyFiring", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
         // lowHealth OR lowFuel returns scavenge
         rules.AddRule(new Rule(
             "lowHealth",
