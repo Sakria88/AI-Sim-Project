@@ -80,7 +80,7 @@ public class NC_SmartTank_FSMRBS : AITank
         // Enemy not in range but enemy base is
         rules.AddRule(new Rule("NC_PatrolState_FMSRBS", "!enemyInRange","enemyBaseInSight",typeof(NC_BaseAttackState_FSMRBS),Rule.Predicate.And));
         // Enemy tank appears close → Attack
-        rules.AddRule(new Rule("NC_Wait_FMSRBS", enemyInCloseRange","enemyInSight",typeof(NC_AttackState_FSMRBS),Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_Wait_FMSRBS", "enemyInCloseRange","enemyInSight",typeof(NC_AttackState_FSMRBS),Rule.Predicate.And));
         // Ammo < 3 OR Fuel < 5 → Scavenge
         rules.AddRule(new Rule("NC_Wait_FMSRBS", "criticalAmmo", "criticalFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
         //Enemy visible but moving away (distance increases beyond mid range)
@@ -117,36 +117,9 @@ public class NC_SmartTank_FSMRBS : AITank
             typeof(NC_ScavengeState_FSMRBS),
             Rule.Predicate.And));
 
-        // Enemy visible but moving away → Pursue
-        rules.AddRule(new Rule(
-            "enemyInSight",
-            "enemyMovingAway",
-            typeof(NC_PursueState_FSMRBS),
-            Rule.Predicate.And));
-
-        // Wait time expired AND no enemy → Patrol
-        rules.AddRule(new Rule(
-            "waitTimeExpired",
-            "enemyInSight",
-            typeof(NC_PatrolState_FSMRBS),
-            Rule.Predicate.nAnd));
-
-        // Ammo < 3 OR Fuel < 5 → Scavenge (BLOCK WAIT)
-        rules.AddRule(new Rule(
-            "ammoLowCritical",
-            "fuelLowCritical",
-            typeof(NC_ScavengeState_FSMRBS),
-            Rule.Predicate.Or));
 
 
-        // --------------------------------------------------
-        // BASE ATTACK RULES
-        // --------------------------------------------------
 
-        
-
-
-    
     }
 
     /// <summary>
