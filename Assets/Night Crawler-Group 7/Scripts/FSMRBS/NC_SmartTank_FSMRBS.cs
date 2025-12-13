@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using static AStar;
 
-public class NC_SmartTank_FSMRBS: AITank
+
+public class NC_SmartTank_FSMRBS : AITank
 {
     public GameObject NCEnTank;        /*!< <c>enemyTank</c> stores a reference to a target enemy tank. 
                                         * This should be taken from <c>enemyTanksFound</c>, only whilst within the tank sensor. 
@@ -29,6 +31,10 @@ public class NC_SmartTank_FSMRBS: AITank
 
     float t;    /*!< <c>t</c> stores timer value */
     public HeuristicMode heuristicMode; /*!< <c>heuristicMode</c> Which heuristic used for find path. */
+
+    public Dictionary<string, bool> stats = new Dictionary<string, bool>();
+    public Rules rules = new Rules();
+
 
     private void InitializeStateMachine()
     {
@@ -76,17 +82,19 @@ public class NC_SmartTank_FSMRBS: AITank
         FollowPathToRandomWorldPoint(1f, heuristicMode);
     }
 
-   // Start is called before the first frame update
-   public override void AITankStart()
-   {
+    // Start is called before the first frame update
+    public override void AITankStart()
+    {
         InitializeStateMachine();
+        InitiliseStats();
+        InitiliseRules();
     }
 
-   // Update is called once per frame
-   public override void AITankUpdate()
-   {
+    // Update is called once per frame
+    public override void AITankUpdate()
+    {
         // Update visible objects, enemy tanks, bases and consumables
-        if(VisibleEnemyTanks.Count > 0)
+        if (VisibleEnemyTanks.Count > 0)
         {
             NCEnTank = VisibleEnemyTanks.First().Key;
         }
@@ -95,12 +103,12 @@ public class NC_SmartTank_FSMRBS: AITank
             NCEnTank = null;
         }
 
-        if(VisibleEnemyBases.Count > 0)
+        if (VisibleEnemyBases.Count > 0)
         {
             NCEnBase = VisibleEnemyBases.First().Key;
         }
 
-        if(VisibleConsumables.Count > 0)
+        if (VisibleConsumables.Count > 0)
         {
             consumable = VisibleConsumables.First().Key;
         }
@@ -109,21 +117,118 @@ public class NC_SmartTank_FSMRBS: AITank
             consumable = null;
         }
 
-        foreach(var entry in VisibleConsumables)
+        foreach (var entry in VisibleConsumables)
         {
-            if(entry.Key.name.Contains("Health"))
+            if (entry.Key.name.Contains("Health"))
             {
                 consumableHealth = entry.Key;
             }
-            else if(entry.Key.name.Contains("Ammo"))
+            else if (entry.Key.name.Contains("Ammo"))
             {
                 consumableAmmo = entry.Key;
             }
-            else if(entry.Key.name.Contains("Fuel"))
+            else if (entry.Key.name.Contains("Fuel"))
             {
                 consumableFuel = entry.Key;
             }
         }
+
+    }
+
+    public void InitiliseRules()
+    {
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "targetReached", "targetSpotted", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "!targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+
+    }
+
+    public void InitiliseStats()
+    {
+        stats.Add("lowHealth", false);
+
+        stats.Add("targetSpotted", false);
+
+        stats.Add("targetReached", false);
+
+        stats.Add("NC_PatrolState_FSMRBS", false);
+
+        stats.Add("NC_PursueState_FSMRBS", false);
+
+        stats.Add("NC_RetreatState_FSMRBS", false);
+
+        stats.Add("NC_AttackState_FSMRBS", false);
+
+
+    }
+
+    public void checkLowHealth()
+    {
+        var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
+
+        float Health = nc_smarttankRBSM.TankCurrentHealth;
+
+        if (Health < 35)
+        {
+            stats["lowHealth"] = true;
+
+        }
+        else
+        {
+            stats["lowHealth"] = false;
+        }
+
+    }
+
+    public void checkLowFuel() 
+    {
+        var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
+
+        float Fuel = nc_smarttankRBSM.TankCurrentAmmo;
+
+        if (Fuel <= 30)
+        {
+            stats["lowFuel"] = true;
+
+        }
+        else
+        {
+            stats["lowFuel"] = false;
+        }
+
+    }
+
+    public void CheckTargetReached() //Function for checking if target is in  range
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f)
+
+        {
+            stats["targetReached"] = true;
+        }
+
+        if (nC_SmartTank_FSMRBS.NCEnTank == null)
+
+        {
+            stats["targetReached"] = false;
+        }
+
+    }
+
+    public void CheckTargetSpotted() //Function in smart tank for checking if the target is there 
+    {
+        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+
+        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 50f)
+        {
+            stats["targetSpotted"] = true;
+        }
+
+        if (nC_SmartTank_FSMRBS.NCEnTank == null)
+        {
+            stats["targetSpotted"] = false;
+        }
+
 
     }
     public override void AIOnCollisionEnter(Collision collision)

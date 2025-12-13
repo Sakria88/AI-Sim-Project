@@ -10,52 +10,67 @@ using static UnityEngine.UI.Selectable;
 public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
 {
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
-    private NC_SmartTank_FSMRBS nC_SmartTank_FSM;
+    private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
 
-    public NC_PursueState_FSMRBS(NC_SmartTank_FSMRBS NCTank)
+
+
+    public NC_PursueState_FSMRBS(NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS)
     {
-        this.nC_SmartTank_FSM = NCTank;         
+        Debug.Log("FSM passed to PursueState = " + nC_SmartTank_FSMRBS);
+        this.nC_SmartTank_FSMRBS = nC_SmartTank_FSMRBS;
     }
 
     public override Type StateEnter()
     {
-       Debug.Log("Entering the pursue state FSM");
-       return null;
+        nC_SmartTank_FSMRBS.stats["NC_PursueState_FSMRBS"] = true;
+
+        Debug.Log("Entering the pursue state FSM");
+        return null;
     }
 
     public override Type StateUpdate()
-    {        
-        if (nC_SmartTank_FSM.TankCurrentHealth < 35 || nC_SmartTank_FSM.TankCurrentFuel < 35 || nC_SmartTank_FSM.TankCurrentAmmo < 3) //If health or fuel is less than 35 or ammo is less than 3
+    {
+
+        Debug.Log("They see me PURSUEING");
+
+
+        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) <= 50)
         {
-            return typeof(NC_ScavengeState_FSM); //Switch to scavenge state
-        } else {
-            if (nC_SmartTank_FSM.NCEnTank != null) //If enemy tank is there
-            {
-                //Store the distance between the tank and enemy tank as a varible
-                float Distance = Vector3.Distance(nC_SmartTank_FSM.transform.position, nC_SmartTank_FSM.NCEnTank.transform.position);
-                if (Distance < 25f) //If the distance between the tank and enemy is less than 25
-                {
-                    return typeof(NC_AttackState_FSM);//switch to the attack state
-                } else
-                {
-                    PursueEnemy(); //If not less thank 25 keep pursuing
-                }
-            }
-            else
-            {
-                return typeof(NC_PatrolState_FSM); //If enemy tank is lost switch to patrol state
-            }
+
+            PursueEnemy(); //function to pursue enemy
         }
+        else
+        {
+            return typeof(NC_PatrolState_FSMRBS);
+        }
+
+
+        //Check the rules to see if there are any that need to be used
+
+        foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
+        {
+            if (item.CheckRule(nC_SmartTank_FSMRBS.stats) != null)
+
+            {
+                return item.CheckRule(nC_SmartTank_FSMRBS.stats);
+            }
+
+        }
+
         return null;
+
     }
 
     public void PursueEnemy()//function to keep pursing
     {
-        nC_SmartTank_FSM.FollowPathToWorldPoint(nC_SmartTank_FSM.NCEnTank, 1f, nC_SmartTank_FSM.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
+        nC_SmartTank_FSMRBS.checkLowHealth();
+        nC_SmartTank_FSMRBS.CheckTargetReached();
+        nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.NCEnTank, 1f, nC_SmartTank_FSMRBS.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
     }
 
     public override Type StateExit()
     {
+        nC_SmartTank_FSMRBS.stats["NC_PursueState_FSMRBS"] = false;
         Debug.Log("Exiting the purse state");
         return null;
     }
