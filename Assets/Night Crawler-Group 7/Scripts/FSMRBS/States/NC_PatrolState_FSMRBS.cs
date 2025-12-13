@@ -6,67 +6,60 @@ using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.UI.Selectable;
 
-// This class is for the patrol state – roaming and deferring decisions to RBS
+/// <summary>
+/// Patrol state (FSMRBS)
+/// Continuous movement state – rules may interrupt, but patrol never stalls.
+/// </summary>
 public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
 {
-    // follow SAME naming convention as Pursue
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
+    private bool patrolPathRequested = false;
 
-    public NC_PatrolState_FSMRBS(NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS)
+    public NC_PatrolState_FSMRBS(NC_SmartTank_FSMRBS tankRef)
     {
-        Debug.Log("FSM passed to PatrolState = " + nC_SmartTank_FSMRBS);
-        this.nC_SmartTank_FSMRBS = nC_SmartTank_FSMRBS;
+        nC_SmartTank_FSMRBS = tankRef;
     }
 
     public override Type StateEnter()
     {
         nC_SmartTank_FSMRBS.stats["NC_PatrolState_FSMRBS"] = true;
-        Debug.Log("Entering the patrol state FSM");
+        patrolPathRequested = false;
         return null;
     }
 
     public override Type StateUpdate()
     {
-        Debug.Log("Patrolling...");
-
         // -----------------------------
-        // FACT UPDATES (ONLY WHAT PATROL NEEDS)
+        // UPDATE FACTS (RBS)
         // -----------------------------
         nC_SmartTank_FSMRBS.CheckEnemyInSight();
+        nC_SmartTank_FSMRBS.CheckEnemyDetected();
         nC_SmartTank_FSMRBS.CheckEnemyBaseDetected();
+        nC_SmartTank_FSMRBS.CheckTargetSpotted();
 
         nC_SmartTank_FSMRBS.CheckLowHealth();
         nC_SmartTank_FSMRBS.CheckLowFuel();
         nC_SmartTank_FSMRBS.CheckLowAmmo();
 
-        // Distance checks ONLY if enemy exists
-        if (nC_SmartTank_FSMRBS.NCEnTank != null)
+        // -----------------------------
+        // PATROL MOVEMENT (DO NOT SPAM)
+        // -----------------------------
+        if (!patrolPathRequested)
         {
-            nC_SmartTank_FSMRBS.CheckEnemyDistanceClose();
-            nC_SmartTank_FSMRBS.CheckEnemyDistanceMid();
-            nC_SmartTank_FSMRBS.CheckEnemyDistanceFar();
-        }
-        else
-        {
-            nC_SmartTank_FSMRBS.stats["enemyDistanceClose"] = false;
-            nC_SmartTank_FSMRBS.stats["enemyDistanceMid"] = false;
-            nC_SmartTank_FSMRBS.stats["enemyDistanceFar"] = false;
+            nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(
+                1f,
+                nC_SmartTank_FSMRBS.heuristicMode
+            );
+
+            patrolPathRequested = true;
         }
 
         // -----------------------------
-        // DEFAULT FSM BEHAVIOUR
+        // RULE EVALUATION
         // -----------------------------
-        nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(
-            1f,
-            nC_SmartTank_FSMRBS.heuristicMode
-        );
-
-        // -----------------------------
-        // RULE CHECK (IDENTICAL TO PURSUE)
-        // -----------------------------
-        foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
+        foreach (Rule rule in nC_SmartTank_FSMRBS.rules.GetRules)
         {
-            Type nextState = item.CheckRule(nC_SmartTank_FSMRBS.stats);
+            Type nextState = rule.CheckRule(nC_SmartTank_FSMRBS.stats);
             if (nextState != null)
             {
                 return nextState;
@@ -79,8 +72,7 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateExit()
     {
         nC_SmartTank_FSMRBS.stats["NC_PatrolState_FSMRBS"] = false;
-        Debug.Log("Exiting the patrol state");
+        patrolPathRequested = false;
         return null;
     }
 }
-
