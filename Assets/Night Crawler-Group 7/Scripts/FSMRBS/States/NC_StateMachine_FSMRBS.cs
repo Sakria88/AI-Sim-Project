@@ -49,6 +49,7 @@ public class NC_StateMachine_FSMRBS : MonoBehaviour
         if (CurrentState == null) // If no current state is set set it to the first state in the dictionary
         {
             CurrentState = states.Values.First();
+            CurrentState.StateEnter();
         }
         else
         {
