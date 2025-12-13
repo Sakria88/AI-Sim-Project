@@ -90,7 +90,7 @@ public class NC_SmartTank_FSMRBS : AITank
         //Enemy tank appears within close range → Attack
         rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "enemyInSight", "enemyDistanceClose", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         //Ammo drops below safe threshold (≤3) → Scavenge
-        rules.AddRule(newRule("NC_BaseAttackState_FSMRBS", "criticalAmmo", "!enemyInSight", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "criticalAmmo", "!enemyInSight", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
         //Health critical → Retreat
         rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "healthCritical", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
         // Fired ≥ 3 shots AND enemy not visible → Patrol
