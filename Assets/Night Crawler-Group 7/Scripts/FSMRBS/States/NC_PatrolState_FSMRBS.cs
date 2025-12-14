@@ -54,10 +54,10 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
         // if consumabkle visible get it
         if (nC_SmartTank_FSMRBS.consumable != null)
         {
-            nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.consumable, 1f, nC_SmartTank_FSMRBS.heuristicMode);
+            nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.consumable, 0.75f, nC_SmartTank_FSMRBS.heuristicMode);
         }else
         {
-            nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSMRBS.heuristicMode);
+            nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(0.75f, nC_SmartTank_FSMRBS.heuristicMode);
         }
 
         // -----------------------------

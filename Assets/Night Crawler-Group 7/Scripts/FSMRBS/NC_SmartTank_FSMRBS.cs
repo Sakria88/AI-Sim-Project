@@ -57,6 +57,7 @@ public class NC_SmartTank_FSMRBS : AITank
         states.Add(typeof(NC_RetreatState_FSMRBS), new NC_RetreatState_FSMRBS(this));
         states.Add(typeof(NC_ScavengeState_FSMRBS), new NC_ScavengeState_FSMRBS(this));
         states.Add(typeof(NC_BaseAttackState_FSMRBS), new NC_BaseAttackState_FSMRBS(this));
+        states.Add(typeof(NC_Wait_FSMRBS), new NC_Wait_FSMRBS(this));
 
         GetComponent<NC_StateMachine_FSMRBS>().SetStates(states);
     }

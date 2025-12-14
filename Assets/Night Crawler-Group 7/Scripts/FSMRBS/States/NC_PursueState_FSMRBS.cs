@@ -12,8 +12,6 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
 
-
-
     public NC_PursueState_FSMRBS(NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS)
     {
         Debug.Log("FSM passed to PursueState = " + nC_SmartTank_FSMRBS);
@@ -31,6 +29,7 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         nC_SmartTank_FSMRBS.UpdateGlobalStats();
+        nC_SmartTank_FSMRBS.CheckTargetReached();
 
         if (nC_SmartTank_FSMRBS.NCEnTank != null)
         {
@@ -41,9 +40,7 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
             return typeof(NC_PatrolState_FSMRBS);
         }
 
-
         //Check the rules to see if there are any that need to be used
-
         foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
         {
             if (item.CheckRule(nC_SmartTank_FSMRBS.stats) != null)
@@ -51,19 +48,15 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
             {
                 return item.CheckRule(nC_SmartTank_FSMRBS.stats);
             }
-
         }
 
         return null;
-
     }
 
     public void PursueEnemy()//function to keep pursing
     {
-        nC_SmartTank_FSMRBS.CheckTargetReached();
         nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.NCEnTank, 1f, nC_SmartTank_FSMRBS.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
     }
-
     public override Type StateExit()
     {
         nC_SmartTank_FSMRBS.stats["NC_PursueState_FSMRBS"] = false;

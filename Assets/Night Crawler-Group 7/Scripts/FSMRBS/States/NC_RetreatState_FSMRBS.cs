@@ -25,7 +25,7 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         //Issue the tank is not finding retreat path and following it before exiting this state and it keeps fighting between attack and retreat state---since it has low health----
-        Debug.Log("Checking Conditions");
+
         //if (nC_SmartTank_FSMRBS.NCEnTank != null)
         //{   //generate a random point in the world and go to it
         //    FindRetreat_Path();
