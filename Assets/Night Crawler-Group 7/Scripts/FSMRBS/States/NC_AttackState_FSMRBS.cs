@@ -1,70 +1,82 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Class <c>NC_AttackState_FSMRBS</c> inherits from <c>NC_BaseState_FSMRBS</c>, manages behaviour for StateEnter, StateUpdate and StateExit
+/// Attack state using FSM + Rule-Based System
 /// </summary>
 public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
 {
-    private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
-    private const float closeRange = 30f;   // rule threshold
+    private NC_SmartTank_FSMRBS tank;
 
-    public NC_AttackState_FSMRBS(NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS)
+    // Threshold for close-range combat
+    private const float CLOSE_RANGE = 30f;
+
+    public NC_AttackState_FSMRBS(NC_SmartTank_FSMRBS tank)
     {
-        this.nC_SmartTank_FSMRBS = nC_SmartTank_FSMRBS;
+        this.tank = tank;
     }
 
     public override Type StateEnter()
     {
-        Debug.Log("Entering the attack state FSMRBS");
+        Debug.Log("Entering ATTACK state (FSM + RBS)");
+
+        // Stop movement so the tank can aim accurately
+        tank.TankStop();
+
         return null;
     }
 
     public override Type StateUpdate()
     {
-        // Safety checks first
-        if (nC_SmartTank_FSMRBS.TankCurrentHealth < 35f)
-            return typeof(NC_RetreatState_FSMRBS);
+        // UPDATE FACTS USED BY RULE SYSTEM
+        tank.CheckEnemyInSight();
+        tank.CheckEnemyNotDetected();
 
-        if (nC_SmartTank_FSMRBS.TankCurrentFuel < 35f || nC_SmartTank_FSMRBS.TankCurrentAmmo == 0)
-            return typeof(NC_ScavengeState_FSMRBS);
+        tank.CheckLowHealth();
+        tank.CheckLowFuel();
+        tank.CheckLowAmmo();
 
-        GameObject target = nC_SmartTank_FSMRBS.NCEnTank;
+        tank.CheckEnemyDistanceClose();
+        tank.CheckEnemyDistanceMid();
+        tank.CheckEnemyDistanceFar();
 
-        // No target means leave attack
-        if (target == null)
-            return typeof(NC_PatrolState_FSMRBS);
 
-        // Check if visible enemy + distance
-        Dictionary<GameObject, float> vis = nC_SmartTank_FSMRBS.VisibleEnemyTanks;
+        // RULE-BASED SYSTEM
 
-        bool enemyInSight = vis != null && vis.ContainsKey(target);
-        if (!enemyInSight)
-            return typeof(NC_PatrolState_FSMRBS);
 
-        float enemyDistance = vis[target];
-
-        
-        // RULE:
-        // if (enemyInSight && enemyDistance <= closeRange)
-        //      nextState = Attack  (so: stay here and attack)
-        
-        if (enemyDistance <= closeRange)
+        foreach (Rule rule in tank.rules.GetRules)
         {
-            // Aim + fire
-            nC_SmartTank_FSMRBS.TurretFaceWorldPoint(target);
-            nC_SmartTank_FSMRBS.TurretFireAtPoint(target);
-            return null; // stay in Attack
+            Type ruleResult = rule.CheckRule(tank.stats);
+            if (ruleResult != null)
+            {
+                return ruleResult;
+            }
         }
 
-        // Otherwise, pursue
-        return typeof(NC_PursueState_FSMRBS);
+        // ATTACK BEHAVIOUR 
+
+        GameObject target = tank.NCEnTank;
+
+        if (target == null)
+            return null;
+
+        // Aim turret at enemy
+        tank.TurretFaceWorldPoint(target);
+
+        // Fire at enemy
+        tank.TurretFireAtPoint(target);
+
+        // Stay in Attack
+        return null;
     }
 
     public override Type StateExit()
     {
-        Debug.Log("Exiting the attack state FSMRBS");
+        Debug.Log("Exiting ATTACK state");
+
+        // Reset turret when leaving attack
+        tank.TurretReset();
+
         return null;
     }
 }
