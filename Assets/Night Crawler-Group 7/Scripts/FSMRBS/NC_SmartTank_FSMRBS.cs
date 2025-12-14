@@ -100,30 +100,13 @@ public class NC_SmartTank_FSMRBS : AITank
         // Enemy tank firing nearby enemy base
         rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyFiring", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
         // lowHealth OR lowFuel returns scavenge
-        rules.AddRule(new Rule(
-            "lowHealth",
-            "lowFuel",
-            "NC_ScavengeState_FSMRBS",
-            typeof(NC_ScavengeState_FSMRBS),
-            Rule.Predicate.Or));
-
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowHealth", "lowFuel", typeof(NC_ScavengeState_FSMRBS),Rule.Predicate.Or));
         // lowAmmo OR lowFuel returns scavenge
-        rules.AddRule(new Rule(
-            "lowAmmo",
-            "lowFuel",
-            "NC_ScavengeState_FSMRBS",
-            typeof(NC_ScavengeState_FSMRBS),
-            Rule.Predicate.Or));
-
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowAmmo", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
         // safeZoneReached AND resourcesLow returns scavenge
-        rules.AddRule(new Rule(
-            "safeZoneReached",
-            "resourcesLow",
-            "NC_ScavengeState_FSMRBS",
-            typeof(NC_ScavengeState_FSMRBS),
-            Rule.Predicate.And));
-
-
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "resourcesLow", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        // enoughAmmo and enoughFuel returns patrol
+        rules.AddRule(new Rule("NC_ScavengeState_FSMRBS", "enoughHealth", "enoughFuel", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
 
 
     }
