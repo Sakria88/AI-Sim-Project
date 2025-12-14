@@ -196,8 +196,14 @@ public class NC_SmartTank_FSMRBS : AITank
         CheckEnemyDistanceClose();
         CheckEnemyDistanceMid();
         CheckEnemyDistanceFar();
+        //
+        //CheckEnemyBaseDestroyed();
+        //CheckShotsFired();
+        //CheckTargetReached();
+        //CheckWaitTimerExceeded(10f);
+        //CheckSafeZoneReached();
     }
-
+    
     /// <summary>
     /// Initialises the AI Tank.
     /// </summary>
