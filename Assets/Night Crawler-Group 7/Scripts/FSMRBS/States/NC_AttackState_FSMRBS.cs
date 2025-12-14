@@ -6,22 +6,23 @@ using UnityEngine;
 /// </summary>
 public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
 {
-    private NC_SmartTank_FSMRBS tank;
+    private NC_SmartTank_FSMRBS nC_SmarTank_FSMRBS;
 
     // Threshold for close-range combat
     private const float CLOSE_RANGE = 30f;
 
     public NC_AttackState_FSMRBS(NC_SmartTank_FSMRBS tank)
     {
-        this.tank = tank;
+        this.nC_SmarTank_FSMRBS = tank;
     }
 
     public override Type StateEnter()
     {
         Debug.Log("Entering ATTACK state (FSM + RBS)");
+        nC_SmarTank_FSMRBS.stats["NC_AttackState_FSMRBS"] = true;
 
         // Stop movement so the tank can aim accurately
-        tank.TankStop();
+        nC_SmarTank_FSMRBS.TankStop();
 
         return null;
     }
@@ -29,40 +30,39 @@ public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         // UPDATE FACTS USED BY RULE SYSTEM
-        tank.CheckEnemyInSight();
-        tank.CheckEnemyNotDetected();
-
-        tank.UpdateGlobalStats();
-
-        tank.CheckEnemyDistanceClose();
-        tank.CheckEnemyDistanceMid();
-        tank.CheckEnemyDistanceFar();
-
+        nC_SmarTank_FSMRBS.UpdateGlobalStats();
 
         // RULE-BASED SYSTEM
-
-
-        foreach (Rule rule in tank.rules.GetRules)
+        if (nC_SmarTank_FSMRBS.NCEnTank != null)
         {
-            Type ruleResult = rule.CheckRule(tank.stats);
+            float distanceToEnemy = Vector3.Distance(
+                nC_SmarTank_FSMRBS.transform.position,
+                nC_SmarTank_FSMRBS.NCEnTank.transform.position
+            );
+            if ( distanceToEnemy <= CLOSE_RANGE )
+            {
+                // ATTACK BEHAVIOUR 
+
+                // Aim turret at enemy
+                nC_SmarTank_FSMRBS.TurretFaceWorldPoint(nC_SmarTank_FSMRBS.NCEnTank);
+
+                // Fire at enemy
+                nC_SmarTank_FSMRBS.TurretFireAtPoint(nC_SmarTank_FSMRBS.NCEnTank);
+            }
+        }
+        else
+        {
+            return typeof(NC_PursueState_FSMRBS);
+        }
+
+        foreach (Rule rule in nC_SmarTank_FSMRBS.rules.GetRules)
+        {
+            Type ruleResult = rule.CheckRule(nC_SmarTank_FSMRBS.stats);
             if (ruleResult != null)
             {
                 return ruleResult;
             }
         }
-
-        // ATTACK BEHAVIOUR 
-
-        GameObject target = tank.NCEnTank;
-
-        if (target == null)
-            return null;
-
-        // Aim turret at enemy
-        tank.TurretFaceWorldPoint(target);
-
-        // Fire at enemy
-        tank.TurretFireAtPoint(target);
 
         // Stay in Attack
         return null;
@@ -71,9 +71,11 @@ public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateExit()
     {
         Debug.Log("Exiting ATTACK state");
+        nC_SmarTank_FSMRBS.stats["NC_AttackState_FSMRBS"] = false;
 
         // Reset turret when leaving attack
-        tank.TurretReset();
+        nC_SmarTank_FSMRBS.TurretReset();
+        nC_SmarTank_FSMRBS.TankGo();
 
         return null;
     }

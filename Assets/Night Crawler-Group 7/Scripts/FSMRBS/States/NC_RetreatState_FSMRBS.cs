@@ -47,7 +47,6 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
         //Check the rules to see if there are any that need to be used
         foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
         {
-            Debug.Log("Checking Rules");
             if (item.CheckRule(nC_SmartTank_FSMRBS.stats) != null)
 
             {
@@ -64,6 +63,8 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
     /// </summary>
     private void CreateRetreatPoint()
     {
+        Debug.Log("RetreatPointCreated");
+
         /*
          * Retreat Logic:
          * ---------------------------------------------

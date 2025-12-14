@@ -37,6 +37,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
     {
         nC_SmartTank_FSMRBS.UpdateGlobalStats();
         nC_SmartTank_FSMRBS.CheckEnemyBaseDestroyed();
+
         // -----------------------------------------------------------------
         // BASE IS GONE → RETURN TO PATROL (search for next base)
         // -----------------------------------------------------------------

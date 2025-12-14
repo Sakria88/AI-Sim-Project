@@ -105,8 +105,15 @@ public class NC_SmartTank_FSMRBS : AITank
         ////////////////////////
         // Attack State Rules //
         ////////////////////////
+        // low health while attacking returns Retreat
+        rules.AddRule(new Rule("NC_AttackState_FSMRBS", "enemyInSight", "lowHealth", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_AttackState_FSMRBS", "enemyInSight", "criticalAmmo", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
 
-        /// No rules????
+        // Low ammo OR low fuel while attacking returns Retreat
+        rules.AddRule(new Rule("NC_AttackState_FSMRBS", "criticalAmmo", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_AttackState_FSMRBS", "lowFuel", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        // Enemy no longer detected while attacking returns Patrol
+        rules.AddRule(new Rule("NC_AttackState_FSMRBS", "enemyNotDetected", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
 
         /////////////////////////////
         // Base Attack State Rules //
@@ -128,11 +135,11 @@ public class NC_SmartTank_FSMRBS : AITank
         /////////////////////////
         // Retreat State Rules //
         /////////////////////////
-        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "enemyNotDetected", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
         // SafeZoneReached AND resourcesLow returns scavenge
         rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "lowHealth", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
         rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
         rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "lowHealth", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And)); // TODO
 
 
         //////////////////////////
