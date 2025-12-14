@@ -7,7 +7,6 @@ using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using static AStar;
 
-
 public class NC_SmartTank_FSMRBS : AITank
 {
     public GameObject NCEnTank;        /*!< <c>enemyTank</c> stores a reference to a target enemy tank. 
@@ -212,12 +211,6 @@ public class NC_SmartTank_FSMRBS : AITank
         CheckEnemyDistanceClose();
         CheckEnemyDistanceMid();
         CheckEnemyDistanceFar();
-        //
-        //CheckEnemyBaseDestroyed();
-        //CheckShotsFired();
-        //CheckTargetReached();
-        //CheckWaitTimerExceeded(10f);
-        //CheckSafeZoneReached();
     }
     
     /// <summary>
@@ -516,7 +509,6 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
-    // TODO
     /// <summary>
     /// Checks if the safe zone has been reached.
     /// </summary>
@@ -588,7 +580,6 @@ public class NC_SmartTank_FSMRBS : AITank
     //  PATROL & BASE ATTACK HELPERS
     //-----------------------------------------
     //generate a temporary world point to feed into A* pathfinding
-
     public GameObject CreateWorldPoint(Vector3 position)
     {
         GameObject point = new GameObject("WorldPoint");

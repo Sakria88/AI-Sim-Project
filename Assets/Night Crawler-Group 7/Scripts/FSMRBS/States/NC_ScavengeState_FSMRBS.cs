@@ -53,6 +53,7 @@ public class NC_ScavengeState_FSMRBS : NC_BaseState_FSMRBS
        // checks resources 
         nC_SmartTank_FSMRBS.UpdateGlobalStats();
 
+        // if all resources are sufficient, switch to Patrol state
         if (nC_SmartTank_FSMRBS.stats["enoughHealth"] && nC_SmartTank_FSMRBS.stats["enoughFuel"] && nC_SmartTank_FSMRBS.stats["enoughAmmo"])
         {
             return typeof(NC_PatrolState_FSMRBS); // Switch to Patrol state
