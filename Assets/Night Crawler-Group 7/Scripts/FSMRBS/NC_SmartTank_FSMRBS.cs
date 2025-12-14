@@ -485,8 +485,7 @@ public class NC_SmartTank_FSMRBS : AITank
     /// <param name="waitTime"></param>
     public void CheckWaitTimerExceeded(float waitTime)
     {
-        t += Time.deltaTime;
-        if (t >= waitTime)
+        if (waitTime >= 3)
         {
             stats["waitTimerExceeded"] = true;
         }

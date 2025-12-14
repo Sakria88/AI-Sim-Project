@@ -41,7 +41,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         if (tank.NCEnBase == null)
         {
             Debug.Log("Base destroyed → returning to Patrol for next base");
-            return typeof(NC_PatrolState_FSM);
+            return typeof(NC_PatrolState_FSMRBS);
         }
 
         // -----------------------------------------------------------------
@@ -50,7 +50,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         if (tank.TankCurrentAmmo <= 0)
         {
             Debug.Log("Ammo depleted → Scavenge");
-            return typeof(NC_ScavengeState_FSM);
+            return typeof(NC_ScavengeState_FSMRBS);
         }
 
         // -----------------------------------------------------------------
@@ -96,7 +96,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         if (shotsFired >= 3)
         {
             Debug.Log("Fired 3 shots → returning to Patrol");
-            return typeof(NC_PatrolState_FSM);
+            return typeof(NC_PatrolState_FSMRBS);
         }
 
         // -----------------------------------------------------------------
@@ -106,7 +106,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         {
             Debug.Log("Burst complete → switching to BaseDefend");
             //return typeof(NC_BaseDefendState_FSM);
-            return typeof(NC_PatrolState_FSM);
+            return typeof(NC_PatrolState_FSMRBS);
 
         }
 
@@ -116,7 +116,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         if (tank.TankCurrentHealth <= 12f)
         {
             Debug.Log("Health low → Retreat");
-            return typeof(NC_RetreatState_FSM);
+            return typeof(NC_RetreatState_FSMRBS);
         }
 
         return null; // stay in base attack

@@ -25,7 +25,7 @@ public class NC_WaitState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         nC_SmartTank_FSMRBS.UpdateGlobalStats(); // Update global stats while waiting
-        nC_SmartTank_FSMRBS.CheckWaitTimerExceeded(3f);
+        nC_SmartTank_FSMRBS.CheckWaitTimerExceeded(timer);
 
         timer += Time.deltaTime; // Increment timer by the time elapsed since last frame
 
