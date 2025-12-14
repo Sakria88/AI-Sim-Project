@@ -18,20 +18,37 @@ public class NC_Wait_FSMRBS : NC_BaseState_FSMRBS
         Debug.Log("Entering the wait state FSM");
         timer = 0f; // Reset timer on entering the state
         nC_SmartTank_FSMRBS.TankStop(); // Stop the tank
+        nC_SmartTank_FSMRBS.stats["NC_WaitState_FSMRBS"] = true;
+
         return null;
     }
     public override Type StateUpdate()
     {
+        nC_SmartTank_FSMRBS.UpdateGlobalStats(); // Update global stats while waiting
+        nC_SmartTank_FSMRBS.CheckWaitTimerExceeded(3f);
+
         timer += Time.deltaTime; // Increment timer by the time elapsed since last frame
-        if (timer >= waitTime)
+
+        //Check the rules to see if there are any that need to be used
+
+        foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
         {
-            return typeof(NC_PatrolState_FSMRBS); // After waiting, switch to patrol state
+            Debug.Log("Checking Rules");
+            if (item.CheckRule(nC_SmartTank_FSMRBS.stats) != null)
+
+            {
+                return item.CheckRule(nC_SmartTank_FSMRBS.stats);
+            }
+
         }
+
         return null; // Stay in the wait state
     }
     public override Type StateExit()
     {
         Debug.Log("Exiting the wait state");
+        nC_SmartTank_FSMRBS.stats["NC_WaitState_FSMRBS"] = false;
+
         nC_SmartTank_FSMRBS.TankGo(); // Resume tank movement on exiting the state
         return null;
     }
