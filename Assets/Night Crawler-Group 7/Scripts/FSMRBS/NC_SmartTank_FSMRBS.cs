@@ -126,9 +126,9 @@ public class NC_SmartTank_FSMRBS : AITank
         /////////////////////////
         // Retreat State Rules //
         /////////////////////////
-        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.nAnd)); //###################
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "enemyNotDetected", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
         // safeZoneReached AND resourcesLow returns scavenge
-        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "resourcesLow", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "resourcesLow", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
 
         //////////////////////////
         // Scavenge State Rules // ONLY 1 rule??? also non existent
@@ -168,8 +168,6 @@ public class NC_SmartTank_FSMRBS : AITank
 
         stats.Add("waitTimerExceeded", false);
         stats.Add("safeZoneReached", false);
-        
-
 
 
         // State tracking stats
@@ -179,7 +177,25 @@ public class NC_SmartTank_FSMRBS : AITank
         stats.Add("NC_RetreatState_FSMRBS", false);
         stats.Add("NC_ScavengeState_FSMRBS", false);
         stats.Add("NC_BaseAttackState_FSMRBS", false);
+    }
 
+    /// <summary>
+    /// Updates all stats for the FSM-RBS.
+    /// </summary>
+    public void UpdateGlobalStats()
+    {
+        CheckEnemyBaseDetected();
+        CheckEnemyInSight();
+        CheckEnemyNotDetected();
+        CheckEnemyFiring();
+
+        CheckHealth();
+        CheckFuel();
+        CheckAmmo();
+
+        CheckEnemyDistanceClose();
+        CheckEnemyDistanceMid();
+        CheckEnemyDistanceFar();
     }
 
     /// <summary>
@@ -190,6 +206,7 @@ public class NC_SmartTank_FSMRBS : AITank
         InitializeStateMachine();
         InitiliseStats();
         InitiliseRules();
+        UpdateGlobalStats();
 
         lastHealth = TankCurrentHealth;
     }
@@ -338,169 +355,46 @@ public class NC_SmartTank_FSMRBS : AITank
         stats["enemyFiring"] = totalRecentDamage >= DAMAGE_THRESHOLD;
     }
 
-
     /// <summary>
-    /// Checks if the tank has less than 35 health.
+    /// Checks the health levels and updates the corresponding stats.
     /// </summary>
-    public void CheckLowHealth()
+    public void CheckHealth()
     {
-        var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
+        float health = TankCurrentHealth;
 
-        float Health = nc_smarttankRBSM.TankCurrentHealth;
-
-        if (Health < 35)
-        {
-            stats["lowHealth"] = true;
-
-        }
-        else
-        {
-            stats["lowHealth"] = false;
-        }
-
+        stats["criticalHealth"] = health < 10f;
+        stats["lowHealth"] = health >= 10f && health < 35f;
+        stats["enoughHealth"] = health > 50f;
     }
 
     /// <summary>
-    /// Checks if the tank has less than 35 fuel.
+    /// Checks the ammo levels and updates the corresponding stats.
     /// </summary>
-    public void CheckLowFuel() 
+    public void CheckAmmo()
     {
-        var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
+        float ammo = TankCurrentAmmo;
 
-        float Fuel = nc_smarttankRBSM.TankCurrentAmmo;
-
-        if (Fuel <= 35)
-        {
-            stats["lowFuel"] = true;
-
-        }
-        else
-        {
-            stats["lowFuel"] = false;
-        }
-
+        stats["criticalAmmo"] = ammo < 1f;
+        stats["lowAmmo"] = ammo >= 1f && ammo <= 3f;
+        stats["enoughAmmo"] = ammo > 5f;
     }
 
     /// <summary>
-    /// Checks if the tank has less than 3 ammo.
+    /// Checks the fuel levels and updates the corresponding stats.
     /// </summary>
-    public void CheckLowAmmo()
+    public void CheckFuel()
     {
-        var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
-        float Ammo = nc_smarttankRBSM.TankCurrentAmmo;
-        if (Ammo <= 3)
-        {
-            stats["lowAmmo"] = true;
-        }
-        else
-        {
-            stats["lowAmmo"] = false;
-        }
+        float fuel = TankCurrentFuel;
+
+        stats["criticalFuel"] = fuel < 10f;
+        stats["lowFuel"] = fuel >= 10f && fuel <= 35f;
+        stats["enoughFuel"] = fuel > 50f;
     }
+
 
     /// <summary>
-    /// Checks if the tank has critical health (<10).
+    /// Checks if enough shots have been fired (≥3).
     /// </summary>
-    public void CheckCriticalHealth()
-    {
-        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float Health = nC_SmartTank_FSMRBS.TankCurrentHealth;
-        if (Health < 10)
-        {
-            stats["criticalHealth"] = true;
-        }
-        else
-        {
-            stats["criticalHealth"] = false;
-        }
-    }
-
-    /// <summary>
-    /// Checks if the tank has critical fuel (<10).
-    /// </summary>
-    public void CheckCriticalFuel()
-    {
-        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float Fuel = nC_SmartTank_FSMRBS.TankCurrentFuel;
-        if (Fuel < 10)
-        {
-            stats["criticalFuel"] = true;
-        }
-        else
-        {
-            stats["criticalFuel"] = false;
-        }
-    }
-
-    /// <summary>
-    /// Checks if the tank has critical ammo (<1).
-    /// </summary>
-    public void CheckCriticalAmmo()
-    {
-        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float Ammo = nC_SmartTank_FSMRBS.TankCurrentAmmo;
-        if (Ammo < 1)
-        {
-            stats["criticalAmmo"] = true;
-        }
-        else
-        {
-            stats["criticalAmmo"] = false;
-        }
-    }
-
-    /// <summary>
-    /// Checks if the tank has enough health (>50).
-    /// </summary>
-    public void CheckEnoughHealth()
-    {
-        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float Health = nC_SmartTank_FSMRBS.TankCurrentHealth;
-        if (Health > 50)
-        {
-            stats["enoughHealth"] = true;
-        }
-        else
-        {
-            stats["enoughHealth"] = false;
-        }
-    }
-
-    /// <summary>
-    /// Checks if the tank has enough fuel (>50).
-    /// </summary>
-    public void CheckEnoughFuel()
-    {
-        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float Fuel = nC_SmartTank_FSMRBS.TankCurrentFuel;
-        if (Fuel > 50)
-        {
-            stats["enoughFuel"] = true;
-        }
-        else
-        {
-            stats["enoughFuel"] = false;
-        }
-    }
-
-    /// <summary>
-    /// Checks if the tank has enough ammo (>5).
-    /// </summary>
-    public void CheckEnoughAmmo()
-    {
-        var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float Ammo = nC_SmartTank_FSMRBS.TankCurrentAmmo;
-        if (Ammo > 5)
-        {
-            stats["enoughAmmo"] = true;
-        }
-        else
-        {
-            stats["enoughAmmo"] = false;
-        }
-    }
-
-    //TODO
     public void CheckShotsFired()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -513,14 +407,14 @@ public class NC_SmartTank_FSMRBS : AITank
             stats["shotsFired"] = false;
         }
     }
-
+    
     /// <summary>
     /// Checks if the enemy is within close distance (<25 units).
     /// </summary>
     public void CheckEnemyDistanceClose()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f && nC_SmartTank_FSMRBS.NCEnTank != null)
+        if (nC_SmartTank_FSMRBS.NCEnTank != null && Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f)
         {
             stats["enemyDistanceClose"] = true;
         }
@@ -537,7 +431,7 @@ public class NC_SmartTank_FSMRBS : AITank
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
         float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position );
-        if (distance >= 25f && distance < 45f && nC_SmartTank_FSMRBS.NCEnTank != null)
+        if (nC_SmartTank_FSMRBS.NCEnTank != null && distance >= 25f && distance < 45f)
         {
             stats["enemyDistanceMid"] = true;
         }
@@ -554,7 +448,7 @@ public class NC_SmartTank_FSMRBS : AITank
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
         float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
-        if (distance >= 45f && nC_SmartTank_FSMRBS.NCEnTank != null)
+        if (nC_SmartTank_FSMRBS.NCEnTank != null && distance >= 45f)
         {
             stats["enemyDistanceFar"] = true;
         }

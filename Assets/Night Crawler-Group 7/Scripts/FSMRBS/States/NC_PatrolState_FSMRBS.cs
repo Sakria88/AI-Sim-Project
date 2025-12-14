@@ -16,11 +16,6 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
     // Reference to the Smart Tank
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
 
-    // Patrol movement data
-    private Vector3 patrolDirection;
-    private const float patrolSpeed = 5f;
-    private const float directionChangeChance = 0.01f;
-
     // --------------------------------------------------
     // CONSTRUCTOR
     // --------------------------------------------------
@@ -50,20 +45,20 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
         // -----------------------------
         // FACT UPDATES (RBS)
         // -----------------------------
-        nC_SmartTank_FSMRBS.CheckEnemyInSight();
-        nC_SmartTank_FSMRBS.CheckEnemyNotDetected();
-        nC_SmartTank_FSMRBS.CheckEnemyBaseDetected();
-        nC_SmartTank_FSMRBS.CheckEnemyInSight();
-
-        nC_SmartTank_FSMRBS.CheckLowHealth();
-        nC_SmartTank_FSMRBS.CheckLowFuel();
-        nC_SmartTank_FSMRBS.CheckLowAmmo();
+        nC_SmartTank_FSMRBS.UpdateGlobalStats();
 
         // -----------------------------
         // ACTUAL MOVEMENT (PATROL OWNS THIS)
         // -----------------------------
 
-        nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSMRBS.heuristicMode);
+        // if consumabkle visible get it
+        if (nC_SmartTank_FSMRBS.consumable != null)
+        {
+            nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.consumable, 1f, nC_SmartTank_FSMRBS.heuristicMode);
+        }else
+        {
+            nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSMRBS.heuristicMode);
+        }
 
 
         // -----------------------------
