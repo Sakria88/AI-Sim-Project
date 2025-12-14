@@ -147,7 +147,10 @@ public class NC_SmartTank_FSMRBS : AITank
         //////////////////////////
 
         // enoughAmmo and enoughFuel returns patrol
-        rules.AddRule(new Rule("NC_ScavengeState_FSMRBS", "enoughHealth", "enoughFuel", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_ScavengeState_FSMRBS", "lowHealth", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_ScavengeState_FSMRBS", "enemyBaseDetected", "enemyNotDetected", typeof(NC_BaseAttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_ScavengeState_FSMRBS", "enemyInSight", "enoughHealth", typeof(NC_WaitState_FSMRBS), Rule.Predicate.And));
+        
     }
 
     /// <summary>
