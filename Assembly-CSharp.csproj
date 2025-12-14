@@ -62,7 +62,6 @@
   <ItemGroup>
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_BaseDefendState_FSM.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSMRBS\States\NC_RetreatState_FSMRBS.cs" />
-    <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSMRBS\States\NC_Wait_FSMRBS.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSMRBS\States\NC_ScavengeState_FSMRBS.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\NC_BaseState_FSM.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\TankScripts\AITank.cs" />
@@ -70,6 +69,7 @@
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\NC_SmartTank_FSM.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSMRBS\NC_SmartTank_FSMRBS.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSMRBS\States\NC_BaseAttackState_FSMRBS.cs" />
+    <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSMRBS\States\NC_WaitState_FSMRBS.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSM\States\NC_BaseAttackState_FSM.cs" />
     <Compile Include="Assets\Scripts\DO NOT MODIFY\AStarScripts\AStar.cs" />
     <Compile Include="Assets\Night Crawler-Group 7\Scripts\FSMRBS\States\NC_StateMachine_FSMRBS.cs" />

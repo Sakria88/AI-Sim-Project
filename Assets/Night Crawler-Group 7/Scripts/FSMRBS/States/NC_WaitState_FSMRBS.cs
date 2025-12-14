@@ -4,12 +4,12 @@ using System.Linq;
 using UnityEngine;
 using System;
 
-public class NC_Wait_FSMRBS : NC_BaseState_FSMRBS
+public class NC_WaitState_FSMRBS : NC_BaseState_FSMRBS
 {
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
     private float waitTime = 3f; // Time to wait in seconds
     private float timer = 0f;
-    public NC_Wait_FSMRBS(NC_SmartTank_FSMRBS tank)
+    public NC_WaitState_FSMRBS(NC_SmartTank_FSMRBS tank)
     {
         this.nC_SmartTank_FSMRBS = tank;
     }
@@ -33,13 +33,10 @@ public class NC_Wait_FSMRBS : NC_BaseState_FSMRBS
 
         foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
         {
-            Debug.Log("Checking Rules");
             if (item.CheckRule(nC_SmartTank_FSMRBS.stats) != null)
-
             {
                 return item.CheckRule(nC_SmartTank_FSMRBS.stats);
             }
-
         }
 
         return null; // Stay in the wait state

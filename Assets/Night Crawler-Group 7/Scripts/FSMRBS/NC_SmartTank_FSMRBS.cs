@@ -57,7 +57,7 @@ public class NC_SmartTank_FSMRBS : AITank
         states.Add(typeof(NC_RetreatState_FSMRBS), new NC_RetreatState_FSMRBS(this));
         states.Add(typeof(NC_ScavengeState_FSMRBS), new NC_ScavengeState_FSMRBS(this));
         states.Add(typeof(NC_BaseAttackState_FSMRBS), new NC_BaseAttackState_FSMRBS(this));
-        states.Add(typeof(NC_Wait_FSMRBS), new NC_Wait_FSMRBS(this));
+        states.Add(typeof(NC_WaitState_FSMRBS), new NC_WaitState_FSMRBS(this));
 
         GetComponent<NC_StateMachine_FSMRBS>().SetStates(states);
     }
@@ -74,11 +74,12 @@ public class NC_SmartTank_FSMRBS : AITank
         // Enemy not in range but enemy base is
         rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyNotDetected", "enemyBaseDetected", typeof(NC_BaseAttackState_FSMRBS), Rule.Predicate.And));
         // Health or fuel drops below safe threshold(<35)
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowHealth", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowHealth", "lowHealth", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowFuel", "lowHealth", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
         // Enemy in far range → Pursue
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyInSight", "enemyInFarRange", typeof(NC_PursueState_FSMRBS), Rule.Predicate.And)); //###################
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyInSight", "enemyDistanceFar", typeof(NC_PursueState_FSMRBS), Rule.Predicate.And)); //###################
         // Enemy in mid range AND safe to wait → Wait
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyInMidRange", "canEnterWait", typeof(NC_Wait_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyDistanceMid", "enemyInSight", typeof(NC_WaitState_FSMRBS), Rule.Predicate.And));
         
         ////////////////////////
         // Pursue State Rules //
@@ -92,9 +93,10 @@ public class NC_SmartTank_FSMRBS : AITank
         //////////////////////
 
         // Ammo < 3 OR Fuel < 35 → Scavenge
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "criticalAmmo", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
+        rules.AddRule(new Rule("NC_Wait_FSMRBS", "criticalAmmo", "criticalAmmo", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
+        rules.AddRule(new Rule("NC_Wait_FSMRBS", "lowFuel", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
         // Enemy tank appears close → Attack
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyInCloseRange", "enemyInSight", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyDistanceClose", "enemyInSight", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         //Enemy visible but moving away (distance increases beyond far range)
         rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyInSight", "enemyDistanceFar", typeof(NC_PursueState_FSMRBS), Rule.Predicate.And));
         // Enemy not visible after wait duration
@@ -112,13 +114,13 @@ public class NC_SmartTank_FSMRBS : AITank
         /////////////////////////////
 
         //Enemy tank appears within close range → Attack
-        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "enemyInSight", "enemyDistanceClose", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyInSight", "enemyDistanceClose", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         //Ammo drops below safe threshold (≤3) → Scavenge
         rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "lowAmmo", "lowAmmo", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
         //Health low → Retreat
-        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "lowHealth", "lowHealth", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "lowHealth", "lowHealth", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
         // Fired ≥ 3 shots AND enemy not visible → Patrol
-        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "shotsFiredEnough", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "shotsFired", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
         // Base destroyed
         rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyBaseDestroyed", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
         // Enemy tank firing nearby enemy base
@@ -128,8 +130,11 @@ public class NC_SmartTank_FSMRBS : AITank
         // Retreat State Rules //
         /////////////////////////
         rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "enemyNotDetected", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
-        // safeZoneReached AND resourcesLow returns scavenge
-        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "resourcesLow", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
+        // SafeZoneReached AND resourcesLow returns scavenge
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "lowHealth", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "lowHealth", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); // TODO
+
 
         //////////////////////////
         // Scavenge State Rules // ONLY 1 rule??? also non existent
@@ -178,6 +183,7 @@ public class NC_SmartTank_FSMRBS : AITank
         stats.Add("NC_RetreatState_FSMRBS", false);
         stats.Add("NC_ScavengeState_FSMRBS", false);
         stats.Add("NC_BaseAttackState_FSMRBS", false);
+        stats.Add("NC_Wait_FSMRBS", false);
     }
 
     /// <summary>
@@ -483,7 +489,6 @@ public class NC_SmartTank_FSMRBS : AITank
         if (t >= waitTime)
         {
             stats["waitTimerExceeded"] = true;
-            t = 0f; // Reset timer after exceeding
         }
         else
         {
