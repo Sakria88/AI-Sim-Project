@@ -66,49 +66,80 @@ public class NC_SmartTank_FSMRBS : AITank
     /// </summary>
     public void InitiliseRules()
     {
-        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.nAnd));
-        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "targetReached", "targetSpotted", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
-        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.nAnd));
-        // Enemy base detected AND no enemy tank → BaseAttack
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyBaseDetected","enemyInSight",typeof(NC_BaseAttackState_FSMRBS),Rule.Predicate.nAnd));
-        // Enemy in far range → Pursue
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyInSight","enemyInFarRange",typeof(NC_PursueState_FSMRBS), Rule.Predicate.And));
-        // Enemy in mid range AND safe to wait → Wait
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyInMidRange","canEnterWait",typeof(NC_Wait_FSMRBS), Rule.Predicate.And));
-        // Health or fuel drops below safe threshold(<35)
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowHealth","lowFuel",typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
+        ////////////////////////
+        // Patrol State Rules //
+        ////////////////////////
+
         // Enemy not in range but enemy base is
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "!enemyInRange","enemyBaseInSight",typeof(NC_BaseAttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "!enemyInRange", "enemyBaseInSight", typeof(NC_BaseAttackState_FSMRBS), Rule.Predicate.nAnd)); //###################
+        // Health or fuel drops below safe threshold(<35)
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowHealth", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
+        // Enemy in far range → Pursue
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyInSight", "enemyInFarRange", typeof(NC_PursueState_FSMRBS), Rule.Predicate.And)); //###################
+        // Enemy in mid range AND safe to wait → Wait
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "enemyInMidRange", "canEnterWait", typeof(NC_Wait_FSMRBS), Rule.Predicate.And));
+
+        // lowHealth OR lowFuel returns scavenge
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowHealth", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or)); // ################### duplicated
+        // lowAmmo OR lowFuel returns scavenge
+        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowAmmo", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or)); // ################### low ammo is as important to go scavenge?
+
+        ////////////////////////
+        // Pursue State Rules //
+        ////////////////////////
+
+        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "targetReached", "targetSpotted", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_PursueState_FSMRBS", "lowHealth", "targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.nAnd)); //###################
+
+        //////////////////////
+        // Wait State Rules //
+        //////////////////////
+
         // Enemy tank appears close → Attack
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyInCloseRange","enemyInSight",typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
-        // Ammo < 3 OR Fuel < 5 → Scavenge
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "criticalAmmo", "criticalFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyInCloseRange", "enemyInSight", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         //Enemy visible but moving away (distance increases beyond mid range)
-        rules.AddRule(new Rule("NC_Wait_FSMRBS","enemyInSight","enemyDistanceFar",typeof(NC_PursueState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyInSight", "enemyDistanceFar", typeof(NC_PursueState_FSMRBS), Rule.Predicate.And)); // far distance or mid distance? ###################
         // Enemy not visible after wait duration
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "waitTimerExceeded", "enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.nAnd));
+        rules.AddRule(new Rule("NC_Wait_FSMRBS", "waitTimerExceeded", "enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.nAnd)); //###################
+        // Ammo < 3 OR Fuel < 5 → Scavenge
+        rules.AddRule(new Rule("NC_Wait_FSMRBS", "criticalAmmo", "criticalFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); //################### OR?
+
+        ////////////////////////
+        // Attack State Rules //
+        ////////////////////////
+
+        /// No rules????
+
+        /////////////////////////////
+        // Base Attack State Rules //
+        /////////////////////////////
+
         //Enemy tank appears within close range → Attack
         rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "enemyInSight", "enemyDistanceClose", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         //Ammo drops below safe threshold (≤3) → Scavenge
-        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "criticalAmmo", "!enemyInSight", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "criticalAmmo", "!enemyInSight", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); //################### we need to check enemy? also, not correct
         //Health critical → Retreat
-        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "healthCritical", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "healthCritical", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And)); //################### healthCritical needs enemy on sight? Health critical or low?
         // Fired ≥ 3 shots AND enemy not visible → Patrol
-        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "shotsFiredEnough", "enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.nAnd));
+        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "shotsFiredEnough", "enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.nAnd)); //###################
         // Base destroyed
-        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyBaseDestroyed", "!enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyBaseDestroyed", "!enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And)); //################### we need to check enemy? also, not correct
         // Enemy tank firing nearby enemy base
         rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyFiring", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
-        // lowHealth OR lowFuel returns scavenge
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowHealth", "lowFuel", typeof(NC_ScavengeState_FSMRBS),Rule.Predicate.Or));
-        // lowAmmo OR lowFuel returns scavenge
-        rules.AddRule(new Rule("NC_PatrolState_FSMRBS", "lowAmmo", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
+
+        /////////////////////////
+        // Retreat State Rules //
+        /////////////////////////
+        rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "lowHealth", "targetSpotted", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.nAnd)); //###################
         // safeZoneReached AND resourcesLow returns scavenge
         rules.AddRule(new Rule("NC_RetreatState_FSMRBS", "safeZoneReached", "resourcesLow", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+
+        //////////////////////////
+        // Scavenge State Rules // ONLY 1 rule??? also non existent
+        //////////////////////////
+
         // enoughAmmo and enoughFuel returns patrol
         rules.AddRule(new Rule("NC_ScavengeState_FSMRBS", "enoughHealth", "enoughFuel", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
-
-
     }
 
     /// <summary>
@@ -215,6 +246,9 @@ public class NC_SmartTank_FSMRBS : AITank
     //  CHECKING RULE HELPERS
     //-----------------------------------------
 
+    /// <summary>
+    /// Checks if the enemy base is detected.
+    /// </summary>
     public void CheckEnemyBaseDetected()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -228,6 +262,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the enemy base is destroyed.
+    /// </summary>
     public void CheckEnemyBaseDestroyed()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -241,6 +278,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the enemy is in sight.
+    /// </summary>
     public void CheckEnemyInSight()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -254,6 +294,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the enemy is detected.
+    /// </summary>
     public void CheckEnemyDetected()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -267,7 +310,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
-    //TODO
+    /// <summary>
+    /// Checks if the enemy is firing by monitoring health changes over time.
+    /// </summary>
     public void CheckEnemyFiring()
     {
         healthSampleTimer += Time.deltaTime;
@@ -299,7 +344,7 @@ public class NC_SmartTank_FSMRBS : AITank
 
 
     /// <summary>
-    /// Checks if the tank has low health.
+    /// Checks if the tank has less than 35 health.
     /// </summary>
     public void CheckLowHealth()
     {
@@ -320,7 +365,7 @@ public class NC_SmartTank_FSMRBS : AITank
     }
 
     /// <summary>
-    /// Checks if the tank has low fuel.
+    /// Checks if the tank has less than 35 fuel.
     /// </summary>
     public void CheckLowFuel() 
     {
@@ -340,6 +385,9 @@ public class NC_SmartTank_FSMRBS : AITank
 
     }
 
+    /// <summary>
+    /// Checks if the tank has less than 5 ammo.
+    /// </summary>
     public void CheckLowAmmo()
     {
         var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
@@ -354,6 +402,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the tank has critical health (<10).
+    /// </summary>
     public void CheckCriticalHealth()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -368,6 +419,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the tank has critical fuel (<10).
+    /// </summary>
     public void CheckCriticalFuel()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -382,6 +436,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the tank has critical ammo (<1).
+    /// </summary>
     public void CheckCriticalAmmo()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -396,6 +453,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the tank has enough health (>50).
+    /// </summary>
     public void CheckEnoughHealth()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -410,6 +470,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the tank has enough fuel (>50).
+    /// </summary>
     public void CheckEnoughFuel()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -424,6 +487,9 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the tank has enough ammo (>5).
+    /// </summary>
     public void CheckEnoughAmmo()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -452,10 +518,13 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the enemy is within close distance (<25 units).
+    /// </summary>
     public void CheckEnemyDistanceClose()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f)
+        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f && nC_SmartTank_FSMRBS.NCEnTank != null)
         {
             stats["enemyDistanceClose"] = true;
         }
@@ -465,11 +534,14 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the enemy is within mid distance (25-45 units).
+    /// </summary>
     public void CheckEnemyDistanceMid()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
-        if (distance >= 25f && distance < 45f)
+        float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position );
+        if (distance >= 25f && distance < 45f && nC_SmartTank_FSMRBS.NCEnTank != null)
         {
             stats["enemyDistanceMid"] = true;
         }
@@ -479,11 +551,14 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the enemy is within far distance (>=45 units).
+    /// </summary>
     public void CheckEnemyDistanceFar()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
         float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
-        if (distance >= 45f)
+        if (distance >= 45f && nC_SmartTank_FSMRBS.NCEnTank != null)
         {
             stats["enemyDistanceFar"] = true;
         }
@@ -493,6 +568,10 @@ public class NC_SmartTank_FSMRBS : AITank
         }
     }
 
+    /// <summary>
+    /// Checks if the wait timer has exceeded the specified wait time.
+    /// </summary>
+    /// <param name="waitTime"></param>
     public void CheckWaitTimerExceeded(float waitTime)
     {
         t += Time.deltaTime;
@@ -508,6 +587,9 @@ public class NC_SmartTank_FSMRBS : AITank
     }
 
     // TODO
+    /// <summary>
+    /// Checks if the safe zone has been reached.
+    /// </summary>
     public void CheckSafeZoneReached(Vector3 safeZonePosition, float threshold)
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
@@ -524,10 +606,10 @@ public class NC_SmartTank_FSMRBS : AITank
     /// <summary>
     /// Checks if the target has been reached.
     /// </summary>
-    public void CheckTargetReached() //Function for checking if target is in  range
+    public void CheckTargetReached()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f)
+        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f) //TODO only 25?
 
         {
             stats["targetReached"] = true;
@@ -543,6 +625,7 @@ public class NC_SmartTank_FSMRBS : AITank
     /// <summary>
     /// Checks if the target has been spotted.
     /// </summary>
+    /// TODO Really needed>>>>
     public void CheckTargetSpotted()
     {
         var tank = GetComponent<NC_SmartTank_FSMRBS>();
