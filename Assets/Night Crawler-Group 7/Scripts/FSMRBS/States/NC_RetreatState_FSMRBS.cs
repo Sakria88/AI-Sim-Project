@@ -42,7 +42,7 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
         //Issue the tank is not finding retreat path and following it before exiting this state and it keeps fighting between attack and retreat state---since it has low health----
         nC_SmartTank_FSMRBS.UpdateGlobalStats();
         nC_SmartTank_FSMRBS.CheckSafeZoneReached(retreatPoint.transform.position, 10f);
-
+        nC_SmartTank_FSMRBS.FollowPathToWorldPoint(retreatPoint, 1f, nC_SmartTank_FSMRBS.heuristicMode);
 
         //Check the rules to see if there are any that need to be used
         foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
@@ -113,10 +113,21 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
 
     public override Type StateExit()
     {
-        nC_SmartTank_FSMRBS.FollowPathToWorldPoint(retreatPoint, 1f, nC_SmartTank_FSMRBS.heuristicMode);
+
+        /*
+         * When exiting the retreat state:
+         * - Destroy the retreat point to prevent scene clutter.
+         * - This is crucial because retreat points are created dynamically.
+         * - Ensures clean memory usage and avoids leftover objects.
+         */
+
+        if (retreatPoint != null)
+        {
+            UnityEngine.Object.Destroy(retreatPoint);
+        }
 
         Debug.Log("Exiting the retreat state FSM");
-        nC_SmartTank_FSMRBS.stats["NC_RetreatState_FSMRBS"] = true;
+        nC_SmartTank_FSMRBS.stats["NC_RetreatState_FSMRBS"] = false;
         return null;
     }
 }

@@ -32,9 +32,7 @@ public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
         tank.CheckEnemyInSight();
         tank.CheckEnemyNotDetected();
 
-        tank.CheckLowHealth();
-        tank.CheckLowFuel();
-        tank.CheckLowAmmo();
+        tank.UpdateGlobalStats();
 
         tank.CheckEnemyDistanceClose();
         tank.CheckEnemyDistanceMid();
