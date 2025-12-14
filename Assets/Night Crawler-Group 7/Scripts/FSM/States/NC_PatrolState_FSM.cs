@@ -39,6 +39,14 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
             return typeof(NC_ScavengeState_FSM);
         }
 
+        // ---------------------------------------
+        // CONSUMABLE WITHIN 52 → SCAVENGE
+        // ---------------------------------------
+        else if (nC_SmartTank_FSM.consumable != null)
+        {
+            return typeof(NC_ScavengeState_FSM);
+        }
+
         // ------------------------------------------------
         // ENEMY TANK WITHIN 52 → PURSUE
         // ------------------------------------------------
@@ -53,14 +61,6 @@ public class NC_PatrolState_FSM : NC_BaseState_FSM
         else if (nC_SmartTank_FSM.NCEnBase != null)
         {
             return typeof(NC_BaseAttackState_FSM);
-        }
-
-        // ---------------------------------------
-        // CONSUMABLE WITHIN 52 → SCAVENGE
-        // ---------------------------------------
-        else if (nC_SmartTank_FSM.consumable != null)
-        {
-            return typeof(NC_PursueState_FSM);
         }
 
         // ------------------------------------------------
