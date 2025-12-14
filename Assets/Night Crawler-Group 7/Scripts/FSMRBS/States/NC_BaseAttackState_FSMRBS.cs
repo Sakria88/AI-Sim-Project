@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
 {
-    private NC_SmartTank_FSMRBS tank;
+    private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
 
     // firing control
     private float fireTimer;
@@ -19,13 +19,13 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
 
     public NC_BaseAttackState_FSMRBS(NC_SmartTank_FSMRBS tankRef)
     {
-        tank = tankRef;
+        nC_SmartTank_FSMRBS = tankRef;
     }
 
     public override Type StateEnter()
     {
         Debug.Log("ENTERING BASE ATTACK");
-
+        nC_SmartTank_FSMRBS.stats["NC_BaseAttackState_FSMRBS"] = true;
         // reset timers and shot counter every time tank enter base attack
         fireTimer = 0f;
         shotsFired = 0;
@@ -35,30 +35,23 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
 
     public override Type StateUpdate()
     {
+        nC_SmartTank_FSMRBS.UpdateGlobalStats();
+        nC_SmartTank_FSMRBS.CheckEnemyBaseDestroyed();
         // -----------------------------------------------------------------
         // BASE IS GONE → RETURN TO PATROL (search for next base)
         // -----------------------------------------------------------------
-        if (tank.NCEnBase == null)
+        if (nC_SmartTank_FSMRBS.NCEnBase == null)
         {
             Debug.Log("Base destroyed → returning to Patrol for next base");
             return typeof(NC_PatrolState_FSMRBS);
         }
 
         // -----------------------------------------------------------------
-        // AMMO == 0 → SCAVENGE (FSM rule)
-        // -----------------------------------------------------------------
-        if (tank.TankCurrentAmmo <= 0)
-        {
-            Debug.Log("Ammo depleted → Scavenge");
-            return typeof(NC_ScavengeState_FSMRBS);
-        }
-
-        // -----------------------------------------------------------------
         // measure distance to enemy base
         // -----------------------------------------------------------------
         float distanceToBase = Vector3.Distance(
-            tank.transform.position,
-            tank.NCEnBase.transform.position
+            nC_SmartTank_FSMRBS.transform.position,
+            nC_SmartTank_FSMRBS.NCEnBase.transform.position
         );
 
         // -----------------------------------------------------------------
@@ -66,17 +59,17 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         // -----------------------------------------------------------------
         if (distanceToBase > preferredAttackDistance)
         {
-            tank.FollowPathToWorldPoint(
-                tank.NCEnBase,
+            nC_SmartTank_FSMRBS.FollowPathToWorldPoint(
+                nC_SmartTank_FSMRBS.NCEnBase,
                 1f,
-                tank.heuristicMode
+                nC_SmartTank_FSMRBS.heuristicMode
             );
         }
 
         // -----------------------------------------------------------------
         // TURRET CONTROL - always keep my aim locked on the base
         // -----------------------------------------------------------------
-        tank.TurretFaceWorldPoint(tank.NCEnBase);
+        nC_SmartTank_FSMRBS.TurretFaceWorldPoint(nC_SmartTank_FSMRBS.NCEnBase);
 
         // -----------------------------------------------------------------
         // FIRING LOGIC (burst-fire behaviour)
@@ -86,7 +79,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         // only fire when close enough to the base
         if (distanceToBase <= preferredAttackDistance)
         {
-            tank.TurretFireAtPoint(tank.NCEnBase);
+            nC_SmartTank_FSMRBS.TurretFireAtPoint(nC_SmartTank_FSMRBS.NCEnBase);
             shotsFired++; // count each shot so tank can follow FSM rules
         }
 
@@ -96,27 +89,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
         if (shotsFired >= 3)
         {
             Debug.Log("Fired 3 shots → returning to Patrol");
-            return typeof(NC_PatrolState_FSMRBS);
-        }
-
-        // -----------------------------------------------------------------
-        // BURST FINISHED → BASE DEFEND (original behaviour)
-        // -----------------------------------------------------------------
-        if (fireTimer >= fireDuration)
-        {
-            Debug.Log("Burst complete → switching to BaseDefend");
-            //return typeof(NC_BaseDefendState_FSM);
-            return typeof(NC_PatrolState_FSMRBS);
-
-        }
-
-        // -----------------------------------------------------------------
-        // SAFETY → LOW HEALTH → RETREAT
-        // -----------------------------------------------------------------
-        if (tank.TankCurrentHealth <= 12f)
-        {
-            Debug.Log("Health low → Retreat");
-            return typeof(NC_RetreatState_FSMRBS);
+            nC_SmartTank_FSMRBS.stats["ShotsFired"] = true;
         }
 
         return null; // stay in base attack
@@ -124,6 +97,8 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
 
     public override Type StateExit()
     {
+        nC_SmartTank_FSMRBS.stats["NC_BaseAttackState_FSMRBS"] = false;
+        nC_SmartTank_FSMRBS.stats["ShotsFired"] = false; // reset for next time
         Debug.Log("EXITING BASE ATTACK");
         return null;
     }

@@ -529,14 +529,11 @@ public class NC_SmartTank_FSMRBS : AITank
     public void CheckTargetReached()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f) //TODO only 25?
+        if (nC_SmartTank_FSMRBS.NCEnTank != null && Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f) //TODO only 25?
 
         {
             stats["targetReached"] = true;
-        }
-
-        if (nC_SmartTank_FSMRBS.NCEnTank == null)
-
+        } else
         {
             stats["targetReached"] = false;
         }

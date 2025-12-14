@@ -1,12 +1,20 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// This class defines the Retreat state for the Night Crawler tank's finite state machine (FSM) 
+/// combined with a Rule-Based System (RBS).
+/// </summary>
 public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
 {
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
+
+    // A single world point that represents the retreat destination.
+    // IMPORTANT: This is now created ONLY ONCE when entering the state 
+    // to avoid spawning multiple objects every frame.
     private GameObject retreatPoint;
 
     public NC_RetreatState_FSMRBS(NC_SmartTank_FSMRBS NCTank)
@@ -17,8 +25,15 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateEnter()
     {
         nC_SmartTank_FSMRBS.stats["NC_RetreatState_FSMRBS"] = true;
+        CreateRetreatPoint();
 
         Debug.Log("Entering the retreat state FSM");
+
+        // ---------------------------------------------------------
+        // When entering Retreat, select ONE retreat destination.
+        // This prevents generating dozens of world points per frame
+        // and ensures stable navigation.
+        // ---------------------------------------------------------
         return null;
     }
 
@@ -28,7 +43,6 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
         nC_SmartTank_FSMRBS.UpdateGlobalStats();
         nC_SmartTank_FSMRBS.CheckSafeZoneReached(retreatPoint.transform.position, 10f);
 
-        FindRetreat_Path();
 
         //Check the rules to see if there are any that need to be used
         foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
@@ -44,42 +58,57 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
         return null;
     }
 
-    public void FindRetreat_Path()
+    /// <summary>
+    /// Calculates and creates a retreat destination based on the enemy tank's position.
+    /// This is only executed ONCE when entering the state.
+    /// </summary>
+    private void CreateRetreatPoint()
     {
-        // var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
+        /*
+         * Retreat Logic:
+         * ---------------------------------------------
+         * - Identify which quadrant the enemy tank is in.
+         * - Select a retreat point in the opposite quadrant.
+         * - This ensures maximum distancing and safer escape routes.
+         */
 
-        Debug.Log("Finding Path");
-        //nC_SmartTank_FSMRBS.CheckTargetSpotted();//Somthing wrinf here
-
-
-        // Create 4 world quadrants (-90,-90 to 90,90)
-        // Determine which quadrant the enemy tank is in
-        // Move to a random position in the opposite quadrant
-        Vector3 enemyPosition = nC_SmartTank_FSMRBS.NCEnTank.transform.position;  //ERROR ITS NOT GETTING THE POSITION
+        Vector3 enemyPosition = nC_SmartTank_FSMRBS.NCEnTank.transform.position;
         Vector3 retreatPosition = Vector3.zero;
+
         if (enemyPosition.x >= 0 && enemyPosition.z >= 0)
         {
-            // Enemy in Quadrant 1, retreat to Quadrant 3
-            retreatPosition = new Vector3(UnityEngine.Random.Range(-85, -10), 0, UnityEngine.Random.Range(-85, -10));
+            // Enemy in Quadrant 1 → Retreat to Quadrant 3
+            retreatPosition = new Vector3(RandomRange(-85, -10), 0, RandomRange(-85, -10));
         }
         else if (enemyPosition.x < 0 && enemyPosition.z >= 0)
         {
-            // Enemy in Quadrant 2, retreat to Quadrant 4
-            retreatPosition = new Vector3(UnityEngine.Random.Range(10, 85), 0, UnityEngine.Random.Range(-85, -10));
+            // Enemy in Quadrant 2 → Retreat to Quadrant 4
+            retreatPosition = new Vector3(RandomRange(10, 85), 0, RandomRange(-85, -10));
         }
         else if (enemyPosition.x < 0 && enemyPosition.z < 0)
         {
-            // Enemy in Quadrant 3, retreat to Quadrant 1
-            retreatPosition = new Vector3(UnityEngine.Random.Range(10, 85), 0, UnityEngine.Random.Range(10, 85));
+            // Enemy in Quadrant 3 → Retreat to Quadrant 1
+            retreatPosition = new Vector3(RandomRange(10, 85), 0, RandomRange(10, 85));
         }
-        else if (enemyPosition.x >= 0 && enemyPosition.z < 0)
+        else
         {
-            // Enemy in Quadrant 4, retreat to Quadrant 2
-            retreatPosition = new Vector3(UnityEngine.Random.Range(-85, -10), 0, UnityEngine.Random.Range(10, 85));
+            // Enemy in Quadrant 4 → Retreat to Quadrant 2
+            retreatPosition = new Vector3(RandomRange(-85, -10), 0, RandomRange(10, 85));
         }
 
-        // retreatPoint = nC_SmartTank_FSMRBS.CreateWorldPoint(retreatPosition);
-        //nC_SmartTank_FSMRBS.FollowPathToWorldPoint(retreatPoint, 1f, nC_SmartTank_FSMRBS.heuristicMode);
+        // ---------------------------------------------------------
+        // Generate ONE world point for the retreat destination.
+        // This avoids spawning hundreds of objects per frame.
+        // ---------------------------------------------------------
+        retreatPoint = nC_SmartTank_FSMRBS.CreateWorldPoint(retreatPosition);
+    }
+
+    /// <summary>
+    /// Utility wrapper for cleaner Random.Range calls.
+    /// </summary>
+    private float RandomRange(int min, int max)
+    {
+        return UnityEngine.Random.Range(min, max);
     }
 
     public override Type StateExit()
