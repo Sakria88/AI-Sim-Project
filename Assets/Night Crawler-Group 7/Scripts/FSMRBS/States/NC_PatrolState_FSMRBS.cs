@@ -38,11 +38,6 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
         nC_SmartTank_FSMRBS.stats["NC_PatrolState_FSMRBS"] = true;
         nC_SmartTank_FSMRBS.TankGo();
 
-        // Pick initial patrol direction
-        patrolDirection = UnityEngine.Random.insideUnitSphere;
-        patrolDirection.y = 0f;
-        patrolDirection.Normalize();
-
         Debug.Log("ENTERING PATROL (FSMRBS)");
         return null;
     }
@@ -67,29 +62,9 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
         // -----------------------------
         // ACTUAL MOVEMENT (PATROL OWNS THIS)
         // -----------------------------
-        // If Rigidbody exists, use physics-safe movement
-        Rigidbody rb = nC_SmartTank_FSMRBS.GetComponent<Rigidbody>();
 
-        if (rb != null && !rb.isKinematic)
-        {
-            rb.MovePosition(
-                rb.position + patrolDirection * patrolSpeed * Time.deltaTime
-            );
-        }
-        else
-        {
-            // Fallback: transform movement
-            nC_SmartTank_FSMRBS.transform.position +=
-                patrolDirection * patrolSpeed * Time.deltaTime;
-        }
+        nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSMRBS.heuristicMode);
 
-        // Occasionally change direction to simulate patrol roaming
-        if (UnityEngine.Random.value < directionChangeChance)
-        {
-            patrolDirection = UnityEngine.Random.insideUnitSphere;
-            patrolDirection.y = 0f;
-            patrolDirection.Normalize();
-        }
 
         // -----------------------------
         // RULE EVALUATION (FSMRBS)
