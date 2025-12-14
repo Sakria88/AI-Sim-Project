@@ -100581,9 +100581,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8075740477363419617}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4052be56c5c69ac4185fcd4c0f40e904, type: 3}
+  m_Script: {fileID: 11500000, guid: 28892f460ea8fbd43b296d0c1e2458e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NCEnTank: {fileID: 0}
+  consumable: {fileID: 0}
+  consumableHealth: {fileID: 0}
+  consumableAmmo: {fileID: 0}
+  consumableFuel: {fileID: 0}
+  NCEnBase: {fileID: 0}
+  myBase: {fileID: 0}
+  heuristicMode: 0
 --- !u!114 &9162085611844313069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100593,14 +100601,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8075740477363419617}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d2816333be89424498945d505479575, type: 3}
+  m_Script: {fileID: 11500000, guid: d022f50693903124dbe391df5e3d10ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NCEnTank: {fileID: 0}
-  consumable: {fileID: 0}
-  NCEnBase: {fileID: 0}
-  myBase: {fileID: 0}
-  heuristicMode: 0
 --- !u!1 &9177135291343502959
 GameObject:
   m_ObjectHideFlags: 0
