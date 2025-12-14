@@ -213,7 +213,6 @@ public class NC_SmartTank_FSMRBS : AITank
         InitializeStateMachine();
         InitiliseStats();
         InitiliseRules();
-        UpdateGlobalStats();
 
         lastHealth = TankCurrentHealth;
     }
@@ -414,16 +413,19 @@ public class NC_SmartTank_FSMRBS : AITank
             stats["shotsFired"] = false;
         }
     }
-    
+
     /// <summary>
     /// Checks if the enemy is within close distance (<25 units).
     /// </summary>
     public void CheckEnemyDistanceClose()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        if (nC_SmartTank_FSMRBS.NCEnTank != null && Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) < 25f)
+        if (nC_SmartTank_FSMRBS.NCEnTank != null)
         {
-            stats["enemyDistanceClose"] = true;
+            float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
+
+            if (distance < 25f)
+                stats["enemyDistanceClose"] = true;
         }
         else
         {
@@ -437,10 +439,13 @@ public class NC_SmartTank_FSMRBS : AITank
     public void CheckEnemyDistanceMid()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position );
-        if (nC_SmartTank_FSMRBS.NCEnTank != null && distance >= 25f && distance < 45f)
+        if (nC_SmartTank_FSMRBS.NCEnTank != null)
         {
-            stats["enemyDistanceMid"] = true;
+            float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
+            if (distance >= 25f && distance < 45f)
+            {
+                stats["enemyDistanceMid"] = true;
+            }
         }
         else
         {
@@ -454,10 +459,13 @@ public class NC_SmartTank_FSMRBS : AITank
     public void CheckEnemyDistanceFar()
     {
         var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
-        float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
-        if (nC_SmartTank_FSMRBS.NCEnTank != null && distance >= 45f)
+        if (nC_SmartTank_FSMRBS.NCEnTank != null)
         {
-            stats["enemyDistanceFar"] = true;
+            float distance = Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position);
+            if (distance >= 45f)
+            {
+                stats["enemyDistanceMid"] = true;
+            }
         }
         else
         {

@@ -53,9 +53,7 @@ public class NC_ScavengeState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
        // checks resources 
-        tank.CheckLowHealth();
-        tank.CheckLowFuel();
-        tank.CheckLowAmmo();
+        tank.UpdateGlobalStats();
 
         // checks if the tank has reached the safe zone
         tank.CheckSafeZoneReached(Vector3.zero, 15f);

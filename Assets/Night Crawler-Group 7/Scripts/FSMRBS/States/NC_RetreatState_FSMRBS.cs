@@ -25,16 +25,12 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         //Issue the tank is not finding retreat path and following it before exiting this state and it keeps fighting between attack and retreat state---since it has low health----
-
-        //if (nC_SmartTank_FSMRBS.NCEnTank != null)
-        //{   //generate a random point in the world and go to it
-        //    FindRetreat_Path();
-        //}
+        nC_SmartTank_FSMRBS.UpdateGlobalStats();
+        nC_SmartTank_FSMRBS.CheckSafeZoneReached(retreatPoint.transform.position, 10f);
 
         FindRetreat_Path();
 
         //Check the rules to see if there are any that need to be used
-
         foreach (Rule item in nC_SmartTank_FSMRBS.rules.GetRules)
         {
             Debug.Log("Checking Rules");
@@ -43,17 +39,13 @@ public class NC_RetreatState_FSMRBS : NC_BaseState_FSMRBS
             {
                 return item.CheckRule(nC_SmartTank_FSMRBS.stats);
             }
-
         }
 
         return null;
-
     }
 
     public void FindRetreat_Path()
     {
-
-
         // var nC_SmartTank_FSMRBS = GetComponent<NC_SmartTank_FSMRBS>();
 
         Debug.Log("Finding Path");
