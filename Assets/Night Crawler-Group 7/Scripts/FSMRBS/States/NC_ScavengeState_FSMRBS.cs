@@ -66,7 +66,7 @@ public class NC_ScavengeState_FSMRBS : NC_BaseState_FSMRBS
             tank.stats["lowAmmo"];
 
         
-        tank.stats["resourcesLow"] = resourcesLow;
+        tank.stats["resourcesLow"] = resourcesLow; // this is a derived fact, it is storing the bool and giving the rule system access to it.
 
         
         // RULE-BASED SYSTEM 
