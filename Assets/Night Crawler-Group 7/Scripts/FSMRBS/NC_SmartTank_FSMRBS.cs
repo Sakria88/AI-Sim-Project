@@ -93,15 +93,14 @@ public class NC_SmartTank_FSMRBS : AITank
         //////////////////////
 
         // Ammo < 3 OR Fuel < 35 → Scavenge
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "criticalAmmo", "criticalAmmo", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "lowFuel", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.Or));
+        rules.AddRule(new Rule("NC_WaitState_FSMRBS", "criticalAmmo", "criticalAmmo", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_WaitState_FSMRBS", "lowFuel", "lowFuel", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
         // Enemy tank appears close → Attack
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyDistanceClose", "enemyInSight", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_WaitState_FSMRBS", "enemyDistanceClose", "enemyInSight", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         //Enemy visible but moving away (distance increases beyond far range)
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "enemyInSight", "enemyDistanceFar", typeof(NC_PursueState_FSMRBS), Rule.Predicate.And));
+        rules.AddRule(new Rule("NC_WaitState_FSMRBS", "enemyInSight", "enemyDistanceFar", typeof(NC_PursueState_FSMRBS), Rule.Predicate.And));
         // Enemy not visible after wait duration
-        rules.AddRule(new Rule("NC_Wait_FSMRBS", "waitTimerExceeded", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
-        
+        rules.AddRule(new Rule("NC_WaitState_FSMRBS", "waitTimerExceeded", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
 
         ////////////////////////
         // Attack State Rules //
@@ -183,7 +182,7 @@ public class NC_SmartTank_FSMRBS : AITank
         stats.Add("NC_RetreatState_FSMRBS", false);
         stats.Add("NC_ScavengeState_FSMRBS", false);
         stats.Add("NC_BaseAttackState_FSMRBS", false);
-        stats.Add("NC_Wait_FSMRBS", false);
+        stats.Add("NC_WaitState_FSMRBS", false);
     }
 
     /// <summary>
@@ -256,13 +255,25 @@ public class NC_SmartTank_FSMRBS : AITank
             {
                 consumableHealth = entry.Key;
             }
+            else if (entry.Key.name.Contains("Health") == false)
+            {
+                consumableHealth = null;
+            }
             else if (entry.Key.name.Contains("Ammo"))
             {
                 consumableAmmo = entry.Key;
             }
+            else if (entry.Key.name.Contains("Ammo") == false)
+            {
+                consumableAmmo = null;
+            }
             else if (entry.Key.name.Contains("Fuel"))
             {
                 consumableFuel = entry.Key;
+            }
+            else if (entry.Key.name.Contains("Fuel") == false)
+            {
+                consumableFuel = null;
             }
         }
     }
