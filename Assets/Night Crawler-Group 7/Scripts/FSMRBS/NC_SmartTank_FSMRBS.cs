@@ -113,13 +113,13 @@ public class NC_SmartTank_FSMRBS : AITank
         //Enemy tank appears within close range → Attack
         rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "enemyInSight", "enemyDistanceClose", typeof(NC_AttackState_FSMRBS), Rule.Predicate.And));
         //Ammo drops below safe threshold (≤3) → Scavenge
-        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "criticalAmmo", "!enemyInSight", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And)); //################### we need to check enemy? also, not correct
-        //Health critical → Retreat
-        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "healthCritical", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And)); //################### healthCritical needs enemy on sight? Health critical or low?
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "lowAmmo", "lowAmmo", typeof(NC_ScavengeState_FSMRBS), Rule.Predicate.And));
+        //Health low → Retreat
+        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "lowHealth", "lowHealth", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
         // Fired ≥ 3 shots AND enemy not visible → Patrol
-        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "shotsFiredEnough", "enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.nAnd)); //###################
+        rules.AddRule(new Rule("Nc_BaseAttackState_FSMRBS", "shotsFiredEnough", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
         // Base destroyed
-        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyBaseDestroyed", "!enemyInSight", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And)); //################### we need to check enemy? also, not correct
+        rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyBaseDestroyed", "enemyNotDetected", typeof(NC_PatrolState_FSMRBS), Rule.Predicate.And));
         // Enemy tank firing nearby enemy base
         rules.AddRule(new Rule("NC_BaseAttackState_FSMRBS", "enemyFiring", "enemyInSight", typeof(NC_RetreatState_FSMRBS), Rule.Predicate.And));
 
@@ -291,7 +291,7 @@ public class NC_SmartTank_FSMRBS : AITank
     }
 
     /// <summary>
-    /// Checks if the enemy is detected.
+    /// Checks if the enemy is not detected.
     /// </summary>
     public void CheckEnemyNotDetected()
     {
@@ -382,13 +382,13 @@ public class NC_SmartTank_FSMRBS : AITank
     }
 
     /// <summary>
-    /// Checks if the tank has less than 5 ammo.
+    /// Checks if the tank has less than 3 ammo.
     /// </summary>
     public void CheckLowAmmo()
     {
         var nc_smarttankRBSM = GetComponent<NC_SmartTank_FSMRBS>();
         float Ammo = nc_smarttankRBSM.TankCurrentAmmo;
-        if (Ammo <= 5)
+        if (Ammo <= 3)
         {
             stats["lowAmmo"] = true;
         }

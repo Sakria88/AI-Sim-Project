@@ -53,7 +53,7 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
         nC_SmartTank_FSMRBS.CheckEnemyInSight();
         nC_SmartTank_FSMRBS.CheckEnemyNotDetected();
         nC_SmartTank_FSMRBS.CheckEnemyBaseDetected();
-        nC_SmartTank_FSMRBS.CheckTargetSpotted();
+        nC_SmartTank_FSMRBS.CheckEnemyInSight();
 
         nC_SmartTank_FSMRBS.CheckLowHealth();
         nC_SmartTank_FSMRBS.CheckLowFuel();
