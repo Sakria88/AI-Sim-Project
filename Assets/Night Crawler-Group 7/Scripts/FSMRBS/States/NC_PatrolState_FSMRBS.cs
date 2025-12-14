@@ -60,7 +60,6 @@ public class NC_PatrolState_FSMRBS : NC_BaseState_FSMRBS
             nC_SmartTank_FSMRBS.FollowPathToRandomWorldPoint(1f, nC_SmartTank_FSMRBS.heuristicMode);
         }
 
-
         // -----------------------------
         // RULE EVALUATION (FSMRBS)
         // -----------------------------

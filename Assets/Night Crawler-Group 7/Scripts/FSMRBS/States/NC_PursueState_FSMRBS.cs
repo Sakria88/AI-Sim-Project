@@ -30,13 +30,10 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
 
     public override Type StateUpdate()
     {
+        nC_SmartTank_FSMRBS.UpdateGlobalStats();
 
-        Debug.Log("They see me PURSUEING");
-
-
-        if (Vector3.Distance(nC_SmartTank_FSMRBS.transform.position, nC_SmartTank_FSMRBS.NCEnTank.transform.position) <= 50)
+        if (nC_SmartTank_FSMRBS.NCEnTank != null)
         {
-
             PursueEnemy(); //function to pursue enemy
         }
         else
@@ -63,7 +60,6 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
 
     public void PursueEnemy()//function to keep pursing
     {
-        nC_SmartTank_FSMRBS.CheckLowHealth();
         nC_SmartTank_FSMRBS.CheckTargetReached();
         nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.NCEnTank, 1f, nC_SmartTank_FSMRBS.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
     }
