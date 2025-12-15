@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Attack state using FSM + Rule-Based System
+/// Attack state using FSM + Rule-Based System (RBS) for the Night Crawler tank.
 /// </summary>
 public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
 {
@@ -32,17 +32,17 @@ public class NC_AttackState_FSMRBS : NC_BaseState_FSMRBS
         // UPDATE FACTS USED BY RULE SYSTEM
         nC_SmarTank_FSMRBS.UpdateGlobalStats();
 
-        // RULE-BASED SYSTEM
+        //----------------------------------------
+        // ATTACK BEHAVIOUR
+        //----------------------------------------
         if (nC_SmarTank_FSMRBS.NCEnTank != null)
         {
             float distanceToEnemy = Vector3.Distance(
                 nC_SmarTank_FSMRBS.transform.position,
                 nC_SmarTank_FSMRBS.NCEnTank.transform.position
             );
-            if ( distanceToEnemy <= CLOSE_RANGE )
+            if ( distanceToEnemy <= CLOSE_RANGE) // If enemy is within close range
             {
-                // ATTACK BEHAVIOUR 
-
                 // Aim turret at enemy
                 nC_SmarTank_FSMRBS.TurretFaceWorldPoint(nC_SmarTank_FSMRBS.NCEnTank);
 

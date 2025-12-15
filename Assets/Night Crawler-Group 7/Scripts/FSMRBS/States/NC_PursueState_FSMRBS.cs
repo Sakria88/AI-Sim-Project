@@ -6,7 +6,9 @@ using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.UI.Selectable;
 
-//This class is for the purse state-the purse state goes after the enemy tank
+/// <summary>
+/// Pursue state (FSMRBS) – tank chases enemy tank when detected.
+/// </summary>
 public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
 {
     // create a private varible for the tank(calling an instance of the Enemy Night Crawler tank )
@@ -29,8 +31,9 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         nC_SmartTank_FSMRBS.UpdateGlobalStats();
-        nC_SmartTank_FSMRBS.CheckTargetReached();
+        nC_SmartTank_FSMRBS.CheckTargetReached(); //check if the target is reached
 
+        //If enemy tank is not null pursue it
         if (nC_SmartTank_FSMRBS.NCEnTank != null)
         {
             PursueEnemy(); //function to pursue enemy
@@ -53,7 +56,10 @@ public class NC_PursueState_FSMRBS : NC_BaseState_FSMRBS
         return null;
     }
 
-    public void PursueEnemy()//function to keep pursing
+    /// <summary>
+    /// Function to pursue the enemy tank
+    /// </summary>
+    public void PursueEnemy()
     {
         nC_SmartTank_FSMRBS.FollowPathToWorldPoint(nC_SmartTank_FSMRBS.NCEnTank, 1f, nC_SmartTank_FSMRBS.heuristicMode); //follow the enemy tank at a speed of one with generic heuristic
     }

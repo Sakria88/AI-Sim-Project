@@ -4,11 +4,15 @@ using System.Linq;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// Wait state (FSMRBS) - tank stops moving for a set period
+/// </summary>
 public class NC_WaitState_FSMRBS : NC_BaseState_FSMRBS
 {
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
     private float waitTime = 3f; // Time to wait in seconds
     private float timer = 0f;
+
     public NC_WaitState_FSMRBS(NC_SmartTank_FSMRBS tank)
     {
         this.nC_SmartTank_FSMRBS = tank;
@@ -25,7 +29,7 @@ public class NC_WaitState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         nC_SmartTank_FSMRBS.UpdateGlobalStats(); // Update global stats while waiting
-        nC_SmartTank_FSMRBS.CheckWaitTimerExceeded(timer);
+        nC_SmartTank_FSMRBS.CheckWaitTimerExceeded(timer); // Check if wait time exceeded
 
         timer += Time.deltaTime; // Increment timer by the time elapsed since last frame
 

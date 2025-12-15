@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class defines the Base Attack state for the Night Crawler tank's finite state machine (FSM)
+/// </summary>
 public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
 {
     private NC_SmartTank_FSMRBS nC_SmartTank_FSMRBS;
@@ -36,7 +39,7 @@ public class NC_BaseAttackState_FSMRBS : NC_BaseState_FSMRBS
     public override Type StateUpdate()
     {
         nC_SmartTank_FSMRBS.UpdateGlobalStats();
-        nC_SmartTank_FSMRBS.CheckEnemyBaseDestroyed();
+        nC_SmartTank_FSMRBS.CheckEnemyBaseDestroyed(); // update fact about enemy base status
 
         // -----------------------------------------------------------------
         // BASE IS GONE → RETURN TO PATROL (search for next base)
